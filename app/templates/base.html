@@ -13,17 +13,40 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <title>{{ title | default("TeacherAndParent") }}</title>
 </head>
-<body>
+<body class="d-flex flex-column min-vh-100">
 <header>
-    <nav class="navbar navbar-light bg-light">
+    <nav class="navbar navbar-dark bg-dark">
         <div class="container-fluid">
-            <h1>Регистрация на консультации</h1>
             <a class="navbar-brand" href="#">TeacherAndParent</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasMenu" aria-controls="offcanvasMenu">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+            <div class="offcanvas offcanvas-end bg-dark text-white" tabindex="-1" id="offcanvasMenu" aria-labelledby="offcanvasMenuLabel">
+                <div class="offcanvas-header">
+                    <h5 class="offcanvas-title" id="offcanvasMenuLabel">Offcanvas</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                </div>
+                <div class="offcanvas-body">
+                    <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="#">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="#">About</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
         </div>
     </nav>
 </header>
 <main role="main" class="container">
     {% block content %}{% endblock %}
 </main>
+<footer class="footer mt-auto py-3 bg-dark text-white" role="contentinfo">
+    <div class="container">
+        <span class="text-muted">© 2022 Company, Inc</span>
+    </div>
+</footer>
 </body>
 </html>
