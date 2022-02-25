@@ -1,11 +1,9 @@
-import os
 from flask import Flask
 
 
-def create_app():
+def create_app(config_type):
     app = Flask(__name__)
-    CONFIG_TYPE = os.getenv('CONFIG_TYPE', default='config.DevelopmentConfig')
-    app.config.from_object(CONFIG_TYPE)
+    app.config.from_object(config_type)
 
     from .views.main import main
     app.register_blueprint(main)
