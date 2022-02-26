@@ -1,0 +1,16 @@
+<div class="card h-100" style="width: 15rem;">
+    <dl class="list-group list-group-flush container">
+        {% for field, value in card_data %}
+            <div class="list-group-item">
+                <div class="row">
+                    <dt class="col text-start">
+                      {{ field }}
+                    </dt>
+                    <dd class="col text-end">
+                      {{ value }}
+                    </dd>
+                </div>
+            </div>
+        {% endfor %}
+    </dl>
+</div>
