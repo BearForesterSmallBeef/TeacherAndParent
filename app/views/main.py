@@ -12,7 +12,7 @@ def get_sample_teacher_consultations():
             "name": "Ирина Григорьевна",
             "date": datetime.date.today(),
             "time": (datetime.datetime.now()).time(),
-            "grade": 8,
+            "form": 8,
             "url": "https://zeem.com/2",
         },
         {
@@ -20,7 +20,7 @@ def get_sample_teacher_consultations():
             "name": None,
             "date": datetime.date.today(),
             "time": (datetime.datetime.now() + datetime.timedelta(minutes=30)).time(),
-            "grade": None,
+            "form": None,
             "url": None,
         },
         {
@@ -28,7 +28,7 @@ def get_sample_teacher_consultations():
             "name": "Виталий Прошутто",
             "date": datetime.date.today() + datetime.timedelta(days=1),
             "time": (datetime.datetime.now() + datetime.timedelta(days=1)).time(),
-            "grade": 9,
+            "form": 9,
             "url": "https://zeem.com/2",
         },
         {
@@ -36,7 +36,7 @@ def get_sample_teacher_consultations():
             "name": "Анастасия Землеройка",
             "date": datetime.date.today() + datetime.timedelta(days=1),
             "time": (datetime.datetime.now() + datetime.timedelta(days=1, minutes=30)).time(),
-            "grade": 9,
+            "form": 9,
             "url": "https://zeem.com/3",
         }
     ]
