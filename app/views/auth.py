@@ -11,7 +11,8 @@ class RegisterForm(FlaskForm):
     school = StringField("Школа", validators=[DataRequired()])
     status = SelectField("Статус", choices=[("parent", "Родитель"), ("teacher", "Учитель")],
                          default="parent")
-    forms = DecimalRangeField("Классы", default=1, validators=[NumberRange(1, 11)])
+    forms = SelectField("Классы", choices=list(zip(map(lambda x: f"form{x}", range(1, 12)),
+                                                   range(1, 12))))
     subjects = SelectField("Предметы", choices=[("math", "Математика"), ("physics", "Физика"),
                                                 ("it", "Информатика")])
     submit = SubmitField("Зарегистрироваться")
