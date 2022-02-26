@@ -5,7 +5,7 @@
 <h2>Консультации Учителя</h2>
 
 {% for date, date_consultations in consultations| groupby("date") %}
-<div class="mt-5 mb-2">
+<div class="mt-3 mb-2">
     <div class="border-bottom border-2">
         <span class="m-5 fs-5 text-secondary">{{ date.strftime("%d.%m.%Y") }}</span>
     </div>

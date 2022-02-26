@@ -19,7 +19,7 @@ def get_sample_teacher_consultations():
             "is_free": True,
             "name": None,
             "date": datetime.date.today(),
-            "time": None,
+            "time": (datetime.datetime.now() + datetime.timedelta(minutes=30)).time(),
             "grade": None,
             "url": None,
         },
