@@ -1,7 +1,7 @@
-from flask import Blueprint, redirect, render_template
+from flask import Blueprint, redirect, render_template, flash
 from flask_wtf import FlaskForm
-from wtforms import StringField, SelectField, DecimalRangeField, SubmitField
-from wtforms.validators import DataRequired, NumberRange
+from wtforms import StringField, SelectField, SubmitField
+from wtforms.validators import DataRequired
 
 auth = Blueprint("auth", __name__)
 
@@ -22,5 +22,6 @@ class RegisterForm(FlaskForm):
 def signup():
     register_form = RegisterForm()
     if register_form.validate_on_submit():
+        flash("Вы успешно зарегистрировались", category="success")
         return redirect("/login")
     return render_template("auth/register.html", form=register_form)
