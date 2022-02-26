@@ -13,7 +13,7 @@
 <div class="m-5 mt-0">
     <div class="row row-cols-1 row-cols-md-4 g-4">
         {% for consultation in date_consultations %}
-            {% set card_data = consultation.__dict__.items() %}
+            {% set card_data = consultation %}
             <div class="col">
                 {% include "consultation_card.html" %}
             </div>

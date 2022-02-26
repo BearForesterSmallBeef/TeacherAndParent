@@ -1,13 +1,14 @@
-<div class="card h-100" style="width: 15rem;">
+<div class="card h-100" style="width: 16rem;">
     <dl class="list-group list-group-flush container">
-        {% for field, value in card_data %}
+        {% set fields = ["name", "date", "time", "grade", "url"] %}
+        {% for field in fields %}
             <div class="list-group-item">
                 <div class="row">
                     <dt class="col text-start">
                       {{ field }}
                     </dt>
                     <dd class="col text-end">
-                      {{ value }}
+                      {{ card_data.__getattribute__(field) }}
                     </dd>
                 </div>
             </div>
