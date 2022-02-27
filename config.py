@@ -10,6 +10,7 @@ APP_DIR = os.path.join(BASE_DIR, APP_NAME)
 
 class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'strong secret key'
+    FLASK_APP = os.environ.get('FLASK_APP')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     DEBUG = False
     TESTING = False
