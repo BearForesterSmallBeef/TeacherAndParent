@@ -64,6 +64,7 @@ class Admin(db.Model):
     School = orm.relation('School')
     Status_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("statuses.id"))
     Status = orm.relation('Status')
+    Сreated_date = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now)
 
     def __repr__(self):
         return '<Admin %r>' % self.id
@@ -80,8 +81,7 @@ class Teacher(db.Model):
     School = orm.relation('School')
     Status_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("statuses.id"))
     Status = orm.relation('Status')
-    Classes = db.Column(db.String, nullable=False)
-    Objects = db.Column(db.String, nullable=False)
+    Сreated_date = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now)
 
     def __repr__(self):
         return '<Teacher %r>' % self.id
@@ -96,6 +96,7 @@ class Parent(db.Model):
     middle_name = db.Column(db.String, nullable=True)
     Status_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("statuses.id"))
     Status = orm.relation('Status')
+    Сreated_date = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now)
 
     def __repr__(self):
         return '<Parent %r>' % self.id
@@ -114,12 +115,46 @@ class Child(db.Model):
     Status = orm.relation('Status')
     Class_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("classes.id"), index=True)
     Classes = orm.relation('Classes')
-    Classroom_teacher_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("teachers.id"), index=True)
-    Classroom_teacher = orm.relation('Teacher')
-    Parents = db.Column(db.String, nullable=False)
+    Сreated_date = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now)
 
     def __repr__(self):
         return '<Child %r>' % self.id
+
+
+class ChildAndParents(db.Model):
+    __tablename__ = 'child_and_parents'
+
+    child_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("children.id"), index=True)
+    child = orm.relation('Child')
+    parent_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("parents.id"), index=True)
+    child = orm.relation('Parent')
+
+
+class ClassroomTeacherAndClasses(db.Model):
+    __tablename__ = 'classroom_teacher_and_classes'
+
+    teacher_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("teachers.id"), index=True)
+    teacher = orm.relation('Teacher')
+    Class_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("classes.id"), index=True)
+    Classes = orm.relation('Classes')
+
+
+class TeacherAndClasses(db.Model):
+    __tablename__ = 'teacher_and_classes'
+
+    teacher_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("teachers.id"), index=True)
+    teacher = orm.relation('Teacher')
+    Class_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("classes.id"), index=True)
+    Classes = orm.relation('Classes')
+
+
+class TeacherAndObjects(db.Model):
+    __tablename__ = 'teacher_and_objects'
+
+    teacher_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("teachers.id"), index=True)
+    teacher = orm.relation('Teacher')
+    object_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("objects.id"), index=True)
+    object = orm.relation('Object')
 
 
 with app.app_context():
