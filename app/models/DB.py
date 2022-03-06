@@ -15,6 +15,7 @@ def creating_bd_file(db):
 
 class School(db.Model):
     __tablename__ = 'schools'
+
     id = db.Column(db.Integer, primary_key=True, autoincrement=True, index=True)
     name = db.Column(db.String, nullable=False)
     about = db.Column(db.String, nullable=True)
@@ -25,6 +26,7 @@ class School(db.Model):
 
 class Object(db.Model):
     __tablename__ = 'objects'
+
     id = db.Column(db.Integer, primary_key=True, autoincrement=True, index=True)
     name = db.Column(db.String, nullable=False)
     about = db.Column(db.String, nullable=True)
@@ -35,6 +37,7 @@ class Object(db.Model):
 
 class Classes(db.Model):
     __tablename__ = 'classes'
+
     id = db.Column(db.Integer, primary_key=True, autoincrement=True, index=True)
     name = db.Column(db.String, nullable=False)
     about = db.Column(db.String, nullable=True)
@@ -52,9 +55,9 @@ class Admin(db.Model):
     middle_name = db.Column(db.String, nullable=True)
     email = db.Column(db.String, nullable=False, index=True, unique=True)
     hashed_password = db.Column(db.String, nullable=False, index=True)
-    School_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("schools.id"), index=True)
-    School = orm.relation('School')
-    Сreated_date = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now)
+    school_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("schools.id"), index=True)
+    school = orm.relation('School')
+    created_date = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now)
 
     def __repr__(self):
         return '<Admin %r>' % self.id
@@ -69,9 +72,9 @@ class Teacher(db.Model):
     middle_name = db.Column(db.String, nullable=True)
     login = db.Column(db.String, nullable=False, index=True, unique=True)
     hashed_password = db.Column(db.String, nullable=False, index=True)
-    School_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("schools.id"), index=True)
-    School = orm.relation('School')
-    Сreated_date = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now)
+    school_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("schools.id"), index=True)
+    school = orm.relation('School')
+    created_date = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now)
 
     def __repr__(self):
         return '<Teacher %r>' % self.id
@@ -86,12 +89,12 @@ class Parent(db.Model):
     middle_name = db.Column(db.String, nullable=True)
     login = db.Column(db.String, index=True, unique=True)
     hashed_password = db.Column(db.String, index=True)
-    School_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("schools.id"), index=True)
-    School = orm.relation('School')
+    school_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("schools.id"), index=True)
+    school = orm.relation('School')
     authorized = sqlalchemy.Column(sqlalchemy.Boolean, default=False)
-    Class_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("classes.id"), index=True)
-    Classes = orm.relation('Classes')
-    Сreated_date = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now)
+    class_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("classes.id"), index=True)
+    classes = orm.relation('Classes')
+    created_date = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now)
 
     def __repr__(self):
         return '<Parent %r>' % self.id
@@ -102,21 +105,21 @@ class Consultation(db.Model):
     teacher_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("teachers.id"), index=True)
     teacher = orm.relation('Teacher')
     parent_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("parents.id"), index=True)
-    parent = teacher = orm.relation('Parent')
+    parent = orm.relation('Parent')
     is_free = sqlalchemy.Column(sqlalchemy.Boolean, default=True)
     start_time = sqlalchemy.Column(sqlalchemy.DateTime, nullable=False)
     finish_time = sqlalchemy.Column(sqlalchemy.DateTime, nullable=False)
     duration = sqlalchemy.Column(sqlalchemy.Integer, nullable=False)
 
 
-class TeacherAndClassesAndObjects(db.Model):
-    __tablename__ = 'teacher_and_classes'
+class TeacherAndClassAndObject(db.Model):
+    __tablename__ = 'teachers_and_classes_and_objects'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True, index=True)
     teacher_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("teachers.id"), index=True)
     teacher = orm.relation('Teacher')
-    Class_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("classes.id"), index=True)
-    Classes = orm.relation('Classes')
+    class_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("classes.id"), index=True)
+    classes = orm.relation('Classes')
     object_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("objects.id"), index=True)
     object = orm.relation('Object')
 
