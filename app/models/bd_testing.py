@@ -9,6 +9,9 @@ with app.app_context():
     school1 = School()
     school1.name = '1501'
     school1.about = 'the best'
+    school2 = School()
+    school2.name = '486'
+    school2.about = 'the worst'
 #    for i in
 #
 #    db.session.add(user1)

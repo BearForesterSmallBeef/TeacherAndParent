@@ -77,8 +77,8 @@ class Teacher(db.Model):
         return '<Teacher %r>' % self.id
 
 
-class Child(db.Model):
-    __tablename__ = 'children'
+class Parent(db.Model):
+    __tablename__ = 'parents'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True, index=True)
     name = db.Column(db.String)
@@ -88,31 +88,34 @@ class Child(db.Model):
     hashed_password = db.Column(db.String, index=True)
     School_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("schools.id"), index=True)
     School = orm.relation('School')
-    Status = sqlalchemy.Column(sqlalchemy.Boolean, default=False)
+    authorized = sqlalchemy.Column(sqlalchemy.Boolean, default=False)
     Class_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("classes.id"), index=True)
     Classes = orm.relation('Classes')
     Сreated_date = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now)
 
     def __repr__(self):
-        return '<Child %r>' % self.id
+        return '<Parent %r>' % self.id
 
 
 class Consultation(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True, index=True)
     teacher_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("teachers.id"), index=True)
     teacher = orm.relation('Teacher')
-    Status = sqlalchemy.Column(sqlalchemy.Boolean, default=True)
+    # parent_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("teachers.id"), index=True)
+    is_free = sqlalchemy.Column(sqlalchemy.Boolean, default=True)
     start_time = sqlalchemy.Column(sqlalchemy.DateTime, nullable=False)
     finish_time = sqlalchemy.Column(sqlalchemy.DateTime, nullable=False)
     duration = sqlalchemy.Column(sqlalchemy.Integer, nullable=False)
 
 
-class TeacherAndClasses(db.Model):
+class TeacherAndClassesAndObjects(db.Model):
     __tablename__ = 'teacher_and_classes'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True, index=True)
     teacher_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("teachers.id"), index=True)
     teacher = orm.relation('Teacher')
+    parent_id
+    parent
     Class_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("classes.id"), index=True)
     Classes = orm.relation('Classes')
     object_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("objects.id"), index=True)
@@ -121,3 +124,11 @@ class TeacherAndClasses(db.Model):
 
 with app.app_context():
     creating_bd_file(db)
+
+
+# TODO разобраться с миграциями
+# TODO заполнение тестовами данными
+# TODO Формочка для админа
+# TODO разобраться c login`ами и rile`ами
+
+
