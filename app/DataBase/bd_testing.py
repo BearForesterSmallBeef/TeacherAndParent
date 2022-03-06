@@ -8,10 +8,7 @@ app = create_app(os.getenv('CONFIG_TYPE', default='config.DevelopmentConfig'))
 with app.app_context():
     school1 = School()
     school1.name = '1501'
-    school1.about = 'На РЖД купил билет' \
-                    'И жду свой рейс с кривым еблетом' \
-                    'Нахуй нужен ваш автобус' \
-                    'Ведь за мной прикатит Томас'
+    school1.about = 'the best'
 #    for i in
 #
 #    db.session.add(user1)
