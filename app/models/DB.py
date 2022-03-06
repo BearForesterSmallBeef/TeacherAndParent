@@ -101,7 +101,8 @@ class Consultation(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True, index=True)
     teacher_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("teachers.id"), index=True)
     teacher = orm.relation('Teacher')
-    # parent_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("teachers.id"), index=True)
+    parent_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("parents.id"), index=True)
+    parent = teacher = orm.relation('Parent')
     is_free = sqlalchemy.Column(sqlalchemy.Boolean, default=True)
     start_time = sqlalchemy.Column(sqlalchemy.DateTime, nullable=False)
     finish_time = sqlalchemy.Column(sqlalchemy.DateTime, nullable=False)
@@ -114,8 +115,6 @@ class TeacherAndClassesAndObjects(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True, index=True)
     teacher_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("teachers.id"), index=True)
     teacher = orm.relation('Teacher')
-    parent_id
-    parent
     Class_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("classes.id"), index=True)
     Classes = orm.relation('Classes')
     object_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("objects.id"), index=True)
