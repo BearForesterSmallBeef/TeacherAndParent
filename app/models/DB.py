@@ -4,6 +4,7 @@ import sqlalchemy
 from sqlalchemy import orm
 from app import db, migrate
 from app import create_app
+from flask_migrate import *
 import os
 
 app = create_app(os.getenv('CONFIG_TYPE', default='config.DevelopmentConfig'))
@@ -125,6 +126,7 @@ class TeacherAndClassAndObject(db.Model):
 
 
 with app.app_context():
+    init(directory='migrations', multidb=False)
     creating_bd_file(db)
 
 

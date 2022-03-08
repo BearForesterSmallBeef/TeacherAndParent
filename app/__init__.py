@@ -16,7 +16,6 @@ def create_app(config_type):
     bootstrap.init_app(app)
     db.init_app(app)
     migrate.init_app(app, db)
-    init(directory='.\\app\\models\\migrations', multidb=False)
 
     from .views.main import main
     from .views.auth import auth
