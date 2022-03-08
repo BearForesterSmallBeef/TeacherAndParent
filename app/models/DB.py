@@ -2,7 +2,7 @@ from flask_sqlalchemy import SQLAlchemy
 import datetime
 import sqlalchemy
 from sqlalchemy import orm
-from app import db
+from app import db, migrate
 from app import create_app
 import os
 
