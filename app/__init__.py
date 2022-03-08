@@ -14,8 +14,8 @@ def create_app(config_type):
     bootstrap.init_app(app)
     db.init_app(app)
 
-    from .views.main import main
-    from .views.auth import auth
+    from .main.views import main
+    from .auth.views import auth
     app.register_blueprint(main)
     app.register_blueprint(auth)
 
