@@ -1,4 +1,4 @@
-from DB import *
+from app.models.DB import *  # https://stackoverflow.com/a/57789224
 from app import create_app
 from app import db
 import os
@@ -17,4 +17,4 @@ with app.app_context():
 #    db.session.add(user1)
 #    db.session.add(user2)
 
-db.session.commit()
+    db.session.commit()
