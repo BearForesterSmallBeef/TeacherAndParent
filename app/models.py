@@ -119,5 +119,3 @@ class TeacherAndClassAndObject(db.Model):
 # TODO заполнение тестовами данными
 # TODO Формочка для админа
 # TODO разобраться c login`ами и rile`ами
-
-

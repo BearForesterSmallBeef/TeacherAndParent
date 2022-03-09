@@ -1,4 +1,4 @@
-from app.models.DB import *  # https://stackoverflow.com/a/57789224
+from app.models import *  # https://stackoverflow.com/a/57789224
 from app import create_app
 from app import db
 import os
