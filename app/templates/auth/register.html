@@ -3,7 +3,7 @@
 
 {% block content %}
 
-<h2>Регистрация</h2>
+<h2>{{ header | default("Регистрация") }}</h2>
 
 {{ render_form(form) }}
 
