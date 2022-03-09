@@ -1,7 +1,7 @@
 from flask import Flask
 from flask_bootstrap import Bootstrap5
 from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import *
+from flask_migrate import Migrate
 
 
 bootstrap = Bootstrap5()
@@ -17,8 +17,8 @@ def create_app(config_type):
     db.init_app(app)
     migrate.init_app(app, db)
 
-    from .views.main import main
-    from .views.auth import auth
+    from .main.views import main
+    from .auth.views import auth
     app.register_blueprint(main)
     app.register_blueprint(auth)
 
