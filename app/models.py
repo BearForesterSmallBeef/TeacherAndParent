@@ -115,7 +115,7 @@ class TeacherAndClassAndObject(db.Model):
     object = orm.relation('Object')
 
 
-# TODO разобраться с миграциями
+# TODO разобраться с миграциями +
 # TODO заполнение тестовами данными
 # TODO Формочка для админа
-# TODO разобраться c login`ами и rile`ами
+# TODO разобраться c login`ами и role`ами
