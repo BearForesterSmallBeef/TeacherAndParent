@@ -4,17 +4,6 @@ from sqlalchemy import orm
 from app import db
 
 
-class School(db.Model):
-    __tablename__ = 'schools'
-
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True, index=True)
-    name = db.Column(db.String, nullable=False)
-    about = db.Column(db.String, nullable=True)
-
-    def __repr__(self):
-        return '<School %r>' % self.id
-
-
 class Object(db.Model):
     __tablename__ = 'objects'
 
@@ -23,10 +12,10 @@ class Object(db.Model):
     about = db.Column(db.String, nullable=True)
 
     def __repr__(self):
-        return '<Object %r>' % self.id
+        return '<Object %r>' % "; ".join(map(str, [self.id, self.name]))
 
 
-class Classes(db.Model):
+class Class(db.Model):
     __tablename__ = 'classes'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True, index=True)
@@ -34,88 +23,83 @@ class Classes(db.Model):
     about = db.Column(db.String, nullable=True)
 
     def __repr__(self):
-        return '<Class %r>' % self.id
+        return '<Class %r>' % "; ".join(map(str, [self.id, self.name]))
 
 
-class Admin(db.Model):
-    __tablename__ = 'admins'
+class Role(db.Model):
+    __tablename__ = 'roles'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True, index=True)
     name = db.Column(db.String, nullable=False)
-    surname = db.Column(db.String, nullable=False, index=True)
-    middle_name = db.Column(db.String, nullable=True)
-    email = db.Column(db.String, nullable=False, index=True, unique=True)
-    hashed_password = db.Column(db.String, nullable=False, index=True)
-    school_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("schools.id"), index=True)
-    school = orm.relation('School')
-    created_date = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now)
+    about = db.Column(db.String, nullable=True)
 
     def __repr__(self):
-        return '<Admin %r>' % self.id
+        return '<Role %r>' % "; ".join(map(str, [self.id, self.name]))
 
 
-class Teacher(db.Model):
-    __tablename__ = 'teachers'
+class User(db.Model):
+    __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True, index=True)
-    name = db.Column(db.String, nullable=False)
-    surname = db.Column(db.String, nullable=False, index=True)
-    middle_name = db.Column(db.String, nullable=True)
     login = db.Column(db.String, nullable=False, index=True, unique=True)
     hashed_password = db.Column(db.String, nullable=False, index=True)
-    school_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("schools.id"), index=True)
-    school = orm.relation('School')
+    name = db.Column(db.String, nullable=False)
+    surname = db.Column(db.String, nullable=False, index=True)
+    middle_name = db.Column(db.String, nullable=True)
+    role_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("roles.id"), index=True)
+    role = orm.relation('Role')
     created_date = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now)
 
     def __repr__(self):
-        return '<Teacher %r>' % self.id
+        return '<User %r>' % "; ".join(map(str, [self.id, self.login, self.surname, self.role_id]))
 
 
 class Parent(db.Model):
     __tablename__ = 'parents'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True, index=True)
-    name = db.Column(db.String)
-    surname = db.Column(db.String, index=True)
-    middle_name = db.Column(db.String, nullable=True)
-    login = db.Column(db.String, index=True, unique=True)
-    hashed_password = db.Column(db.String, index=True)
-    school_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("schools.id"), index=True)
-    school = orm.relation('School')
-    authorized = sqlalchemy.Column(sqlalchemy.Boolean, default=False)
+    parent_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("users.id"), index=True)
+    parent = orm.relation('User')
     class_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("classes.id"), index=True)
-    classes = orm.relation('Classes')
-    created_date = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now)
+    Class = orm.relation('Class')
 
     def __repr__(self):
-        return '<Parent %r>' % self.id
+        return '<Parent %r>' % "; ".join(map(str, [self.parent_id, self.class_id]))
+
+
+class TeacherAndTheirObjectsAndClasses(db.Model):
+    __tablename__ = 'teachers&objects&classes'
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True, index=True)
+    teacher_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("users.id"), index=True)
+    teacher = orm.relation('User')
+    object_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("objects.id"), index=True)
+    object = orm.relation('Object')
+    class_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("classes.id"), index=True)
+    Class = orm.relation('Class')
+
+    def __repr__(self):
+        return '<TeacherAndTheirObjectsAndClasses %r>' % "; ".join(map(str, [self.id, self.teacher_id, self.object_id,
+                                                                             self.class_id]))
 
 
 class Consultation(db.Model):
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True, index=True)
-    teacher_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("teachers.id"), index=True)
-    teacher = orm.relation('Teacher')
-    parent_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("parents.id"), index=True)
-    parent = orm.relation('Parent')
-    is_free = sqlalchemy.Column(sqlalchemy.Boolean, default=True)
-    start_time = sqlalchemy.Column(sqlalchemy.DateTime, nullable=False)
-    finish_time = sqlalchemy.Column(sqlalchemy.DateTime, nullable=False)
-    duration = sqlalchemy.Column(sqlalchemy.Integer, nullable=False)
-
-
-class TeacherAndClassAndObject(db.Model):
-    __tablename__ = 'teachers_and_classes_and_objects'
+    __tablename__ = 'consultations'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True, index=True)
-    teacher_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("teachers.id"), index=True)
-    teacher = orm.relation('Teacher')
-    class_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("classes.id"), index=True)
-    classes = orm.relation('Classes')
-    object_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("objects.id"), index=True)
-    object = orm.relation('Object')
+    teacher_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("users.id"), index=True)
+    teacher = orm.relation('User')
+    parent_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("users.id"), index=True)
+    parent = orm.relation('User')
+    consultation_start_time = sqlalchemy.Column(sqlalchemy.DateTime)
+    duration = sqlalchemy.Column(sqlalchemy.DateTime)
+    status = sqlalchemy.Column(sqlalchemy.Boolean, default=True)
 
+    def __repr__(self):
+        return '<Consultation %r>' % "; ".join(map(str, [self.id, self.teacher_id, self.parent_id, self.status,
+                                                  self.consultation_start_time, self.duration]))
 
-# TODO разобраться с миграциями
+# TODO разобраться с миграциями +
 # TODO заполнение тестовами данными
 # TODO Формочка для админа
-# TODO разобраться c login`ами и rile`ами
+# TODO разобраться c login`ами и role`ами
