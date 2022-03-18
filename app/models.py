@@ -54,9 +54,10 @@ class User(db.Model):
         return '<User %r>' % "; ".join(map(str, [self.id, self.login, self.surname, self.role_id]))
 
 
-class Parent:
+class Parent(db.Model):
     __tablename__ = 'parents'
 
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True, index=True)
     parent_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("users.id"), index=True)
     parent = orm.relation('User')
     class_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("classes.id"), index=True)
@@ -66,7 +67,7 @@ class Parent:
         return '<Parent %r>' % "; ".join(map(str, [self.parent_id, self.class_id]))
 
 
-class TeacherAndTheirObjectsAndClasses:
+class TeacherAndTheirObjectsAndClasses(db.Model):
     __tablename__ = 'teachers&objects&classes'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True, index=True)
@@ -82,7 +83,7 @@ class TeacherAndTheirObjectsAndClasses:
                                                                              self.class_id]))
 
 
-class Consultation:
+class Consultation(db.Model):
     __tablename__ = 'consultations'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True, index=True)
