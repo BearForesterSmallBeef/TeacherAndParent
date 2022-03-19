@@ -62,5 +62,12 @@ with app.app_context():
     db.session.add(Role(name="teacher", about="Может создавать консультации"))
     db.session.add(Role(name="parent", about="Может записываться на консультации"))
     db.session.add(Role(name="guest", about="Вы кто такие?"))
+
+    db.session.add(User(login="timonich_login", hashed_password="timonich_password", name="Татьяна",
+                        surname="Тимонич", middle_name="Васильевна",
+                        role_id=db.session.query(Role).filter(Role.name == "admin").first().id))
+    db.session.add(User(login="timonich_login", hashed_password="timonich_password", name="Татьяна",
+                        surname="Тимонич", middle_name="Васильевна",
+                        role_id=db.session.query(Role).filter(Role.name == "admin").first().id))
     db.session.commit()
 
