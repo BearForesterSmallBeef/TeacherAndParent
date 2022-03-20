@@ -41,14 +41,14 @@ class User(db.Model):
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True, index=True)
-    login = db.Column(db.String, nullable=False, index=True, unique=True)
-    hashed_password = db.Column(db.String, nullable=False, index=True)
-    name = db.Column(db.String, nullable=False)
-    surname = db.Column(db.String, nullable=False, index=True)
+    login = db.Column(db.String, index=True, unique=True, nullable=True)
+    hashed_password = db.Column(db.String, index=True, nullable=True)
+    name = db.Column(db.String, nullable=True)
+    surname = db.Column(db.String, index=True, nullable=True)
     middle_name = db.Column(db.String, nullable=True)
-    role_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("roles.id"), index=True)
+    role_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("roles.id"), index=True, nullable=True)
     role = orm.relation('Role')
-    created_date = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now)
+    created_date = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now, nullable=True)
 
     def __repr__(self):
         return '<User %r>' % "; ".join(map(str, [self.id, self.login, self.surname, self.role_id]))
@@ -92,12 +92,13 @@ class Consultation(db.Model):
     parent_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("parents.id"), index=True)
     parent = orm.relation('Parent')
     consultation_start_time = sqlalchemy.Column(sqlalchemy.DateTime)
-    duration = sqlalchemy.Column(sqlalchemy.DateTime)
+    consultation_finish_time = sqlalchemy.Column(sqlalchemy.DateTime)
     status = sqlalchemy.Column(sqlalchemy.Boolean, default=True)
 
     def __repr__(self):
         return '<Consultation %r>' % "; ".join(map(str, [self.id, self.teacher_id, self.parent_id, self.status,
-                                                  self.consultation_start_time, self.duration]))
+                                                         self.consultation_start_time, self.duration]))
+
 
 # TODO разобраться с миграциями +
 # TODO заполнение тестовами данными
