@@ -67,8 +67,8 @@ class Parent(db.Model):
         return '<Parent %r>' % "; ".join(map(str, [self.parent_id, self.class_id]))
 
 
-class TeacherAndTheirObjectsAndClasses(db.Model):
-    __tablename__ = 'teachers&objects&classes'
+class TeacherObjectsClasses(db.Model):
+    __tablename__ = 'teacher_objects_classes'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True, index=True)
     teacher_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("users.id"), index=True)
@@ -79,7 +79,7 @@ class TeacherAndTheirObjectsAndClasses(db.Model):
     Class = orm.relation('Class')
 
     def __repr__(self):
-        return '<TeacherAndTheirObjectsAndClasses %r>' % "; ".join(map(str, [self.id, self.teacher_id, self.object_id,
+        return '<TeacherObjectsClasses %r>' % "; ".join(map(str, [self.id, self.teacher_id, self.object_id,
                                                                              self.class_id]))
 
 
@@ -88,16 +88,16 @@ class Consultation(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True, index=True)
     teacher_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("users.id"), index=True)
-    teacher = orm.relation('User')
-    parent_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("parents.id"), index=True)
-    parent = orm.relation('Parent')
+    teacher = orm.relation(User, foreign_keys=teacher_id)
+    parent_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("users.id"), index=True)
+    parent = orm.relationship(User, foreign_keys=parent_id)
     consultation_start_time = sqlalchemy.Column(sqlalchemy.DateTime)
     consultation_finish_time = sqlalchemy.Column(sqlalchemy.DateTime)
     status = sqlalchemy.Column(sqlalchemy.Boolean, default=True)
 
     def __repr__(self):
         return '<Consultation %r>' % "; ".join(map(str, [self.id, self.teacher_id, self.parent_id, self.status,
-                                                         self.consultation_start_time, self.duration]))
+                                                         self.consultation_start_time, self.consultation_finish_time]))
 
 
 # TODO разобраться с миграциями +

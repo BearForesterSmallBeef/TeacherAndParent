@@ -7,7 +7,6 @@ import os
 app = create_app(os.getenv('CONFIG_TYPE', default='config.DevelopmentConfig'))
 
 with app.app_context():
-
     object_list = ["русский язык",
 "программирование на c++",
 "практикум",
@@ -91,29 +90,27 @@ with app.app_context():
                           class_id=db.session.query(Class).filter(Class.name == "9-5").first().id))
 
     for i in range(len(class_list) // 2):
-        db.session.add(TeacherAndTheirObjectsAndClasses(
+        db.session.add(TeacherObjectsClasses(
             teacher_id=db.session.query(User).filter(User.surname == "Петров").first().id,
             object_id=db.session.query(Object).filter(Object.name == object_list[0]).first().id,
             class_id=db.session.query(Class).filter(Class.name == class_list[i]).first().id))
-        db.session.add(TeacherAndTheirObjectsAndClasses(
+        db.session.add(TeacherObjectsClasses(
             teacher_id=db.session.query(User).filter(User.surname == "Иванов").first().id,
             object_id=db.session.query(Object).filter(Object.name == object_list[1]).first().id,
             class_id=db.session.query(Class).filter(Class.name == class_list[i]).first().id))
     for i in range(len(class_list) // 2, len(class_list)):
-        db.session.add(TeacherAndTheirObjectsAndClasses(
+        db.session.add(TeacherObjectsClasses(
             teacher_id=db.session.query(User).filter(User.surname == "Петров").first().id,
             object_id=db.session.query(Object).filter(Object.name == object_list[1]).first().id,
             class_id=db.session.query(Class).filter(Class.name == class_list[i]).first().id))
-        db.session.add(TeacherAndTheirObjectsAndClasses(
+        db.session.add(TeacherObjectsClasses(
             teacher_id=db.session.query(User).filter(User.surname == "Иванов").first().id,
             object_id=db.session.query(Object).filter(Object.name == object_list[0]).first().id,
             class_id=db.session.query(Class).filter(Class.name == class_list[i]).first().id))
 
     db.session.add(Consultation(
         teacher_id=db.session.query(User).filter(User.surname == "Петров").first().id,
-        parent_id=db.session.query(Parent).filter(Parent.parent_id ==
-                                                  db.session.query(User).filter(User.surname
-                                                                                == "Васильев").first().id).first().id,
+        parent_id=db.session.query(User).filter(User.surname == "Васильев").first().id,
         consultation_start_time=datetime.datetime(2023, 1, 10, 13, 30, 0),
         consultation_finish_time=datetime.datetime(2023, 1, 10, 13, 30, 0) + datetime.timedelta(minutes=10),
         status=False))
@@ -124,9 +121,7 @@ with app.app_context():
 
     db.session.add(Consultation(
         teacher_id=db.session.query(User).filter(User.surname == "Иванов").first().id,
-        parent_id=db.session.query(Parent).filter(Parent.parent_id ==
-                                                  db.session.query(User).filter(User.surname
-                                                                                == "Смирнов").first().id).first().id,
+        parent_id=db.session.query(User).filter(User.surname == "Смирнов").first().id,
         consultation_start_time=datetime.datetime(2023, 1, 10, 13, 30, 0),
         consultation_finish_time=datetime.datetime(2023, 1, 10, 13, 30, 0) + datetime.timedelta(minutes=10),
         status=False))
