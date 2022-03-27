@@ -3,6 +3,7 @@ from app import create_app
 from app import db
 import datetime
 import os
+from werkzeug.security import generate_password_hash, check_password_hash
 
 app = create_app(os.getenv('CONFIG_TYPE', default='config.DevelopmentConfig'))
 
@@ -63,21 +64,21 @@ with app.app_context():
     db.session.add(Role(name="teacher", about="Может создавать консультации"))
     db.session.add(Role(name="parent", about="Может записываться на консультации"))
 
-    db.session.add(User(login="timonich_login", hashed_password="timonich_password", name="Татьяна",
+    db.session.add(User(login="timonich_login", hashed_password=generate_password_hash("timonich_password"), name="Татьяна",
                         surname="Тимонич", middle_name="Васильевна",
                         role_id=db.session.query(Role).filter(Role.name == "head_teacher").first().id))
 
-    db.session.add(User(login="teacher1_login", hashed_password="teacher1_password", name="Иван",
+    db.session.add(User(login="teacher1_login", hashed_password=generate_password_hash("teacher1_password"), name="Иван",
                         surname="Иванов", middle_name="Иванович",
                         role_id=db.session.query(Role).filter(Role.name == "teacher").first().id))
-    db.session.add(User(login="teacher2_login", hashed_password="teacher2_password", name="Пётр",
+    db.session.add(User(login="teacher2_login", hashed_password=generate_password_hash("teacher2_password"), name="Пётр",
                         surname="Петров", middle_name="Пётрович",
                         role_id=db.session.query(Role).filter(Role.name == "teacher").first().id))
 
-    db.session.add(User(login="parent1_login", hashed_password="parent1_password", name="Василий",
+    db.session.add(User(login="parent1_login", hashed_password=generate_password_hash("parent1_password"), name="Василий",
                         surname="Васильев", middle_name="Васильевич",
                         role_id=db.session.query(Role).filter(Role.name == "parent").first().id))
-    db.session.add(User(login="parent2_login", hashed_password="parent2_password", name="Семён",
+    db.session.add(User(login="parent2_login", hashed_password=generate_password_hash("parent2_password"), name="Семён",
                         surname="Смирнов", middle_name="Семёнович",
                         role_id=db.session.query(Role).filter(Role.name == "parent").first().id))
 
