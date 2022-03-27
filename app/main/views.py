@@ -1,5 +1,7 @@
 from flask import Blueprint, render_template
-from app.models import *
+
+from app import db
+from app.models import Subject
 
 main = Blueprint("main", __name__)
 
@@ -48,3 +50,9 @@ def get_sample_teacher_consultations():
 def teacher_consultations():
     consultations = get_sample_teacher_consultations()
     return render_template("teacher/consultations.html", consultations=consultations)
+
+
+@main.route("/subjects")
+def get_subjects():
+    subjects = db.session.query(Subject).all()
+    return render_template("parent/subjects.html", subjects=subjects)
