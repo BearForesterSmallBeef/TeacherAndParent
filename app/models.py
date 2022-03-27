@@ -53,6 +53,16 @@ class User(db.Model):
     def __repr__(self):
         return '<User %r>' % "; ".join(map(str, [self.id, self.login, self.surname, self.role_id]))
 
+    def get_hash(self, password):
+        from werkzeug.security import generate_password_hash
+
+        return generate_password_hash(password)
+
+    def check_hash(self, hash, password):
+        from werkzeug.security import check_password_hash
+
+        return check_password_hash(hash, password)
+
 
 class Parent(db.Model):
     __tablename__ = 'parents'
