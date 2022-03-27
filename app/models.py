@@ -4,15 +4,15 @@ from sqlalchemy import orm
 from app import db
 
 
-class Object(db.Model):
-    __tablename__ = 'objects'
+class Subject(db.Model):
+    __tablename__ = 'subjects'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True, index=True)
     name = db.Column(db.String, nullable=False)
     about = db.Column(db.String, nullable=True)
 
     def __repr__(self):
-        return '<Object %r>' % "; ".join(map(str, [self.id, self.name]))
+        return '<Subject %r>' % "; ".join(map(str, [self.id, self.name]))
 
 
 class Class(db.Model):
@@ -67,19 +67,19 @@ class Parent(db.Model):
         return '<Parent %r>' % "; ".join(map(str, [self.parent_id, self.class_id]))
 
 
-class TeacherObjectsClasses(db.Model):
-    __tablename__ = 'teacher_objects_classes'
+class TeacherSubjectsClasses(db.Model):
+    __tablename__ = 'teacher_subjects_classes'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True, index=True)
     teacher_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("users.id"), index=True)
     teacher = orm.relation('User')
-    object_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("objects.id"), index=True)
-    object = orm.relation('Object')
+    subject_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("subjects.id"), index=True)
+    subject = orm.relation('Subject')
     class_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("classes.id"), index=True)
     Class = orm.relation('Class')
 
     def __repr__(self):
-        return '<TeacherObjectsClasses %r>' % "; ".join(map(str, [self.id, self.teacher_id, self.object_id,
+        return '<TeacherSubjectsClasses %r>' % "; ".join(map(str, [self.id, self.teacher_id, self.subject_id,
                                                                              self.class_id]))
 
 
