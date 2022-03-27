@@ -1,10 +1,7 @@
-import sqlalchemy.ext.declarative
+import os
 
-from app.models import *
 from app import create_app
 from app import db
-import datetime
-import os
 
 app = create_app(os.getenv('CONFIG_TYPE', default='config.DevelopmentConfig'))
 

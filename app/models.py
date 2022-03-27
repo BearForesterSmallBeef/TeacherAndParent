@@ -1,6 +1,8 @@
 import datetime
+
 import sqlalchemy
 from sqlalchemy import orm
+
 from app import db
 
 
@@ -46,9 +48,11 @@ class User(db.Model):
     name = db.Column(db.String, nullable=True)
     surname = db.Column(db.String, index=True, nullable=True)
     middle_name = db.Column(db.String, nullable=True)
-    role_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("roles.id"), index=True, nullable=True)
+    role_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("roles.id"), index=True,
+                                nullable=True)
     role = orm.relation('Role')
-    created_date = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now, nullable=True)
+    created_date = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now,
+                                     nullable=True)
 
     def __repr__(self):
         return '<User %r>' % "; ".join(map(str, [self.id, self.login, self.surname, self.role_id]))
@@ -73,14 +77,16 @@ class TeacherSubjectsClasses(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True, index=True)
     teacher_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("users.id"), index=True)
     teacher = orm.relation('User')
-    subject_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("subjects.id"), index=True)
+    subject_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("subjects.id"),
+                                   index=True)
     subject = orm.relation('Subject')
     class_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("classes.id"), index=True)
     Class = orm.relation('Class')
 
     def __repr__(self):
-        return '<TeacherSubjectsClasses %r>' % "; ".join(map(str, [self.id, self.teacher_id, self.subject_id,
-                                                                             self.class_id]))
+        return '<TeacherSubjectsClasses %r>' % "; ".join(
+            map(str, [self.id, self.teacher_id, self.subject_id,
+                      self.class_id]))
 
 
 class Consultation(db.Model):
@@ -96,9 +102,9 @@ class Consultation(db.Model):
     status = sqlalchemy.Column(sqlalchemy.Boolean, default=True)
 
     def __repr__(self):
-        return '<Consultation %r>' % "; ".join(map(str, [self.id, self.teacher_id, self.parent_id, self.status,
-                                                         self.consultation_start_time, self.consultation_finish_time]))
-
+        return '<Consultation %r>' % "; ".join(
+            map(str, [self.id, self.teacher_id, self.parent_id, self.status,
+                      self.consultation_start_time, self.consultation_finish_time]))
 
 # TODO разобраться с миграциями +
 # TODO заполнение тестовами данными
