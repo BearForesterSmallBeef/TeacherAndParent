@@ -1,7 +1,5 @@
 import os
 
-from werkzeug.security import generate_password_hash
-
 from app import create_app
 from app.models import *
 
@@ -66,29 +64,29 @@ with app.app_context():
     db.session.add(Role(name="parent", about="Может записываться на консультации"))
 
     db.session.add(
-        User(login="timonich_login", hashed_password=generate_password_hash("timonich_password"),
+        User(login="timonich_login", password="timonich_password",
              name="Татьяна",
              surname="Тимонич", middle_name="Васильевна",
              role_id=db.session.query(Role).filter(Role.name == "head_teacher").first().id))
 
     db.session.add(
-        User(login="teacher1_login", hashed_password=generate_password_hash("teacher1_password"),
+        User(login="teacher1_login", password="teacher1_password",
              name="Иван",
              surname="Иванов", middle_name="Иванович",
              role_id=db.session.query(Role).filter(Role.name == "teacher").first().id))
     db.session.add(
-        User(login="teacher2_login", hashed_password=generate_password_hash("teacher2_password"),
+        User(login="teacher2_login", password="teacher2_password",
              name="Пётр",
              surname="Петров", middle_name="Пётрович",
              role_id=db.session.query(Role).filter(Role.name == "teacher").first().id))
 
     db.session.add(
-        User(login="parent1_login", hashed_password=generate_password_hash("parent1_password"),
+        User(login="parent1_login", password="parent1_password",
              name="Василий",
              surname="Васильев", middle_name="Васильевич",
              role_id=db.session.query(Role).filter(Role.name == "parent").first().id))
     db.session.add(
-        User(login="parent2_login", hashed_password=generate_password_hash("parent2_password"),
+        User(login="parent2_login", password="parent2_password",
              name="Семён",
              surname="Смирнов", middle_name="Семёнович",
              role_id=db.session.query(Role).filter(Role.name == "parent").first().id))

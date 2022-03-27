@@ -2,6 +2,7 @@ import datetime
 
 import sqlalchemy
 from sqlalchemy import orm
+from werkzeug.security import generate_password_hash, check_password_hash
 
 from app import db
 
@@ -53,6 +54,18 @@ class User(db.Model):
     role = orm.relation('Role')
     created_date = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now,
                                      nullable=True)
+
+    @property
+    def password(self):
+        # https://github.com/miguelgrinberg/flasky/blob/master/app/models.py#L129
+        raise AttributeError('password is not a readable attribute')
+
+    @password.setter
+    def password(self, password):
+        self.hashed_password = generate_password_hash(password)
+
+    def verify_password(self, password):
+        return check_password_hash(self.password_hash, password)
 
     def __repr__(self):
         return '<User %r>' % "; ".join(map(str, [self.id, self.login, self.surname, self.role_id]))
@@ -106,7 +119,5 @@ class Consultation(db.Model):
             map(str, [self.id, self.teacher_id, self.parent_id, self.status,
                       self.consultation_start_time, self.consultation_finish_time]))
 
-# TODO разобраться с миграциями +
-# TODO заполнение тестовами данными
 # TODO Формочка для админа
 # TODO разобраться c login`ами и role`ами
