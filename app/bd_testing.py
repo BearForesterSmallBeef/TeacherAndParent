@@ -59,7 +59,6 @@ with app.app_context():
     db.session.add(Role(name="admin", about="Может все - царь-батюшка"))
     db.session.add(
         Role(name="head_teacher", about="Может создавать учетные записи - почти царь всея Руси"))
-    db.session.add(Role(name="developers", about="Цари всея Руси"))
     db.session.add(Role(name="teacher", about="Может создавать консультации"))
     db.session.add(Role(name="parent", about="Может записываться на консультации"))
 
