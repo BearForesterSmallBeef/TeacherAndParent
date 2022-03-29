@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2 class="mb-3">Предметы</h2>
+
+{% for subject in subjects %}
+
+    <div class="card mb-2 text-dark bg-light">
+        <div class="card-body">
+            <div class="text-capitalize">{{ subject.name }}</div>
+        </div>
+    </div>
+
+{% endfor %}
+
+{% endblock %}

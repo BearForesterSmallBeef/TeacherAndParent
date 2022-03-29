@@ -40,6 +40,13 @@ class Role(db.Model):
         return '<Role %r>' % "; ".join(map(str, [self.id, self.name]))
 
 
+class RolesIds:
+    ADMIN = 1
+    HEAD_TEACHER = 2
+    TEACHER = 3
+    PARENT = 4
+
+
 class User(db.Model):
     __tablename__ = 'users'
 
@@ -66,6 +73,10 @@ class User(db.Model):
 
     def verify_password(self, password):
         return check_password_hash(self.password_hash, password)
+
+    @property
+    def full_name(self):
+        return f"{self.surname} {self.name} {self.middle_name}"
 
     def __repr__(self):
         return '<User %r>' % "; ".join(map(str, [self.id, self.login, self.surname, self.role_id]))
