@@ -11,7 +11,7 @@ APP_DIR = os.path.join(BASE_DIR, APP_NAME)
 class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'strong secret key'
     FLASK_APP = os.environ.get('FLASK_APP')
-    SERVER_NAME = f'{os.environ.get("SERVER_NAME", "")}:{os.environ.get("FLASK_RUN_PORT")}'
+    SERVER_NAME = f'{os.environ.get("SERVER_NAME", "127.0.0.1")}:{os.environ.get("FLASK_RUN_PORT")}'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     DEBUG = False
     TESTING = False

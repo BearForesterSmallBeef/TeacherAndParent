@@ -1,7 +1,7 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, request
 
 from app import db
-from app.models import Subject, User, RolesIds
+from app.models import Subject, User, RolesIds, TeacherSubjectsClasses
 
 main = Blueprint("main", __name__)
 
@@ -61,4 +61,11 @@ def get_subjects():
 @main.route("/teachers")
 def get_teachers():
     teachers = db.session.query(User).filter(User.role_id == RolesIds.TEACHER)
+    subject_id = request.args.get("subject", type=int)
+    if subject_id is not None:
+        teachers = teachers.join(
+            TeacherSubjectsClasses.query.join(
+                Subject, TeacherSubjectsClasses.subject_id == subject_id
+            )
+        )
     return render_template("parent/teachers.html", teachers=teachers)
