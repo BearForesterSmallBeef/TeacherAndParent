@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request
 
 from app import db
-from app.models import Subject, User, RolesIds, TeacherSubjectsClasses
+from app.models import Subject, User, RolesIds, TeacherSubjectsClasses, Consultation, Parent
 
 main = Blueprint("main", __name__)
 
@@ -16,7 +16,7 @@ def get_sample_teacher_consultations():
             "date": datetime.date.today(),
             "time": (datetime.datetime.now()).time(),
             "form": 8,
-            "url": "https://zeem.com/2",
+            "url": "https://zeem.com/1",
         },
         {
             "is_free": True,
@@ -46,10 +46,24 @@ def get_sample_teacher_consultations():
     return [SimpleNamespace(**data) for data in consultations]
 
 
+class ConsultationCard:
+
+    def __init__(self, consultation: Consultation):
+        self.is_free = consultation.status
+        self.parent_name = consultation.parent.full_name if consultation.parent is not None else None
+        self.date = consultation.consultation_start_time.date
+        self.time = consultation.consultation_start_time.time
+        self.duration = (consultation.consultation_finish_time - consultation.consultation_start_time).seconds // 60
+        self.class_ = db.session.query(Parent).filter_by(parent_id=consultation.parent_id).first().Class
+        # TODO: separate dates in consultation, add url to consultation
+        # TODO: rename parent_id to user_id in Parent model
+
+
 @main.route("/teacher/consultations")
 def teacher_consultations():
-    consultations = get_sample_teacher_consultations()
-    return render_template("teacher/consultations.html", consultations=consultations)
+    consultations = db.session.query(Consultation).all()
+    consultation_cards = map(ConsultationCard, consultations)
+    return render_template("teacher/consultations.html", consultations=consultation_cards)
 
 
 @main.route("/subjects")
