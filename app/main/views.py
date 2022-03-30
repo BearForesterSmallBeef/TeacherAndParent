@@ -47,14 +47,24 @@ def get_sample_teacher_consultations():
 
 
 class ConsultationCard:
+    fields_labels = {
+        "parent_name": "Имя",
+        "date": "Дата",
+        "time": "Время",
+        "duration": "Продолжительность",
+        "class_": "Класс",
+    }
 
     def __init__(self, consultation: Consultation):
         self.is_free = consultation.status
-        self.parent_name = consultation.parent.full_name if consultation.parent is not None else None
-        self.date = consultation.consultation_start_time.date
-        self.time = consultation.consultation_start_time.time
-        self.duration = (consultation.consultation_finish_time - consultation.consultation_start_time).seconds // 60
-        self.class_ = db.session.query(Parent).filter_by(parent_id=consultation.parent_id).first().Class
+        self.parent_name = consultation.parent.full_name if consultation.parent is not None else ""
+        self.date = consultation.consultation_start_time.date().strftime("%d.%m.%Y")
+        self.time = consultation.consultation_start_time.time().strftime("%H:%M")
+        self.duration = str((consultation.consultation_finish_time
+                         - consultation.consultation_start_time).seconds // 60) + " мин"
+        self.class_ = db.session.query(Parent).filter_by(
+            parent_id=consultation.parent_id
+        ).first().Class.name if consultation.parent is not None else ""
         # TODO: separate dates in consultation, add url to consultation
         # TODO: rename parent_id to user_id in Parent model
 
@@ -63,7 +73,9 @@ class ConsultationCard:
 def teacher_consultations():
     consultations = db.session.query(Consultation).all()
     consultation_cards = map(ConsultationCard, consultations)
-    return render_template("teacher/consultations.html", consultations=consultation_cards)
+    return render_template("teacher/consultations.html",
+                           consultations=consultation_cards,
+                           fields_labels=ConsultationCard.fields_labels)
 
 
 @main.route("/subjects")
