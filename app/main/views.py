@@ -47,35 +47,52 @@ def get_sample_teacher_consultations():
 
 
 class ConsultationCard:
-    fields_labels = {
-        "parent_name": "Имя",
-        "date": "Дата",
-        "time": "Время",
-        "duration": "Продолжительность",
-        "class_": "Класс",
-    }
+    fields_labels = (
+        ("date", "Дата"),
+        ("time", "Время"),
+        ("duration", "Продолжительность"),
+    )
 
     def __init__(self, consultation: Consultation):
         self.is_free = consultation.status
-        self.parent_name = consultation.parent.full_name if consultation.parent is not None else ""
         self.date = consultation.consultation_start_time.date().strftime("%d.%m.%Y")
         self.time = consultation.consultation_start_time.time().strftime("%H:%M")
         self.duration = str((consultation.consultation_finish_time
-                         - consultation.consultation_start_time).seconds // 60) + " мин"
+                             - consultation.consultation_start_time).seconds // 60) + " мин"
+        # TODO: separate dates in consultation, add url to consultation
+        # TODO: rename parent_id to user_id in Parent model
+
+
+class ConsultationCardTeacher(ConsultationCard):
+    fields_labels = ((("parent_name", "Родитель"), ) +
+                     ConsultationCard.fields_labels +
+                     (("class_", "Класс"), ))
+
+    def __init__(self, consultation: Consultation):
+        super(ConsultationCardTeacher, self).__init__(consultation)
+        self.parent_name = consultation.parent.full_name if consultation.parent is not None else ""
         self.class_ = db.session.query(Parent).filter_by(
             parent_id=consultation.parent_id
         ).first().Class.name if consultation.parent is not None else ""
-        # TODO: separate dates in consultation, add url to consultation
-        # TODO: rename parent_id to user_id in Parent model
+
+
+class ConsultationCardParent(ConsultationCard):
+    fields_labels = ((("teacher_name", "Учитель"), ) +
+                     ConsultationCard.fields_labels)
+
+    def __init__(self, consultation: Consultation):
+        super(ConsultationCardParent, self).__init__(consultation)
+        self.teacher_name = (consultation.teacher.full_name
+                             if consultation.teacher is not None else "")
 
 
 @main.route("/teacher/consultations")
 def teacher_consultations():
     consultations = db.session.query(Consultation).all()
-    consultation_cards = map(ConsultationCard, consultations)
+    consultation_cards = map(ConsultationCardTeacher, consultations)
     return render_template("teacher/consultations.html",
                            consultations=consultation_cards,
-                           fields_labels=ConsultationCard.fields_labels)
+                           fields_labels=ConsultationCardTeacher.fields_labels)
 
 
 @main.route("/parent/consultations")
@@ -84,10 +101,10 @@ def parent_consultations():
     consultations = db.session.query(Consultation)
     if teacher_id is not None:
         consultations = consultations.filter_by(teacher_id=teacher_id)
-    consultation_cards = map(ConsultationCard, consultations)
-    return render_template("teacher/consultations.html",
+    consultation_cards = map(ConsultationCardParent, consultations)
+    return render_template("parent/consultations.html",
                            consultations=consultation_cards,
-                           fields_labels=ConsultationCard.fields_labels)
+                           fields_labels=ConsultationCardParent.fields_labels)
 
 
 @main.route("/subjects")
