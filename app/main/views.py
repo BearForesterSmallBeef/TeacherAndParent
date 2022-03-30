@@ -1,3 +1,5 @@
+import datetime
+
 from flask import Blueprint, render_template, request
 
 from app import db
@@ -15,12 +17,9 @@ class ConsultationCard:
 
     def __init__(self, consultation: Consultation):
         self.is_free = consultation.status
-        self.date = consultation.consultation_start_time.date().strftime("%d.%m.%Y")
-        self.time = consultation.consultation_start_time.time().strftime("%H:%M")
-        self.duration = str((consultation.consultation_finish_time
-                             - consultation.consultation_start_time).seconds // 60) + " мин"
-        # TODO: separate dates in consultation, add url to consultation
-        # TODO: rename parent_id to user_id in Parent model
+        self.date = consultation.date.strftime("%d.%m.%Y")
+        self.time = consultation.start_time.strftime("%H:%M")
+        self.duration = str(consultation.duration // 60) + " мин"
 
 
 class ConsultationCardTeacher(ConsultationCard):

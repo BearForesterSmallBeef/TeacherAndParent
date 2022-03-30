@@ -127,6 +127,13 @@ class Consultation(db.Model):
     status = sqlalchemy.Column(sqlalchemy.Boolean, default=True)
     url = sqlalchemy.Column(sqlalchemy.String)
 
+    @property
+    def duration(self):
+        return (datetime.datetime.combine(datetime.date.min,
+                                          self.finish_time)
+                - datetime.datetime.combine(datetime.date.min,
+                                            self.start_time)).seconds
+
     def __repr__(self):
         return '<Consultation %r>' % "; ".join(
             map(str, [self.id, self.teacher_id, self.parent_id, self.status,
