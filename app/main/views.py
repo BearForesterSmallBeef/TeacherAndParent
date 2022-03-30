@@ -78,6 +78,18 @@ def teacher_consultations():
                            fields_labels=ConsultationCard.fields_labels)
 
 
+@main.route("/parent/consultations")
+def parent_consultations():
+    teacher_id = request.args.get("teacher", type=int)
+    consultations = db.session.query(Consultation)
+    if teacher_id is not None:
+        consultations = consultations.filter_by(teacher_id=teacher_id)
+    consultation_cards = map(ConsultationCard, consultations)
+    return render_template("teacher/consultations.html",
+                           consultations=consultation_cards,
+                           fields_labels=ConsultationCard.fields_labels)
+
+
 @main.route("/subjects")
 def get_subjects():
     subjects = db.session.query(Subject).all()
