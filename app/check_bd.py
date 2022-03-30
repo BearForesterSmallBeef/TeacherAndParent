@@ -3,7 +3,7 @@ import os
 from app import create_app
 from app import db
 
-app = create_app(os.getenv('CONFIG_TYPE', default='config.DevelopmentConfig'))
+app = create_app("config.DevelopmentConfig")
 
 with app.app_context():
     print(db.metadata.tables.keys())

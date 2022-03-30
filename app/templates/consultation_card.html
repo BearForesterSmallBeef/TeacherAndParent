@@ -1,25 +1,13 @@
     <div class="card">
         <dl class="list-group list-group-flush">
-            {% set fields = [("name", "Имя"), ("date", "Дата"), ("time", "Время"), ("form", "Класс"), ("url", "Ссылка")] %}
-            {% for field, label in fields %}
+            {% for field, label in fields_labels %}
                 <div class="list-group-item {{ 'list-group-item-primary' if card_data.is_free else 'list-group-item-secondary' }}">
                     <div class="row">
                         <dt class="col text-start">
                             {{ label }}
                         </dt>
-                        <dd class="col text-end">
-                            {% set value = card_data.__getattribute__(field) %}
-                            {% if value is not none %}
-                                {% if field == "url" %}
-                                    <a href="{{ value }}">{{ value }}</a>
-                                {% elif field == "date" %}
-                                    {{ value.strftime("%d.%m.%Y") }}
-                                {% elif field == "time" %}
-                                    {{ value.strftime("%H:%M") }}
-                                {% else %}
-                                    {{ value }}
-                                {% endif %}
-                            {% endif %}
+                        <dd class="col text-end text-nowrap">
+                            {{ card_data | attr(field) }}
                         </dd>
                     </div>
                 </div>
