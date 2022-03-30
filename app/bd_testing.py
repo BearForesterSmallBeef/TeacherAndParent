@@ -1,5 +1,3 @@
-import os
-
 from app import create_app
 from app.models import *
 
@@ -91,10 +89,10 @@ with app.app_context():
              role_id=db.session.query(Role).filter(Role.name == "parent").first().id))
 
     db.session.add(
-        Parent(parent_id=db.session.query(User).filter(User.surname == "Васильев").first().id,
+        Parent(user_id=db.session.query(User).filter(User.surname == "Васильев").first().id,
                class_id=db.session.query(Class).filter(Class.name == "9-4").first().id))
     db.session.add(
-        Parent(parent_id=db.session.query(User).filter(User.surname == "Смирнов").first().id,
+        Parent(user_id=db.session.query(User).filter(User.surname == "Смирнов").first().id,
                class_id=db.session.query(Class).filter(Class.name == "9-5").first().id))
 
     for i in range(len(class_list) // 2):
@@ -119,26 +117,34 @@ with app.app_context():
     db.session.add(Consultation(
         teacher_id=db.session.query(User).filter(User.surname == "Петров").first().id,
         parent_id=db.session.query(User).filter(User.surname == "Васильев").first().id,
-        consultation_start_time=datetime.datetime(2023, 1, 10, 13, 30, 0),
-        consultation_finish_time=datetime.datetime(2023, 1, 10, 13, 30, 0) + datetime.timedelta(
-            minutes=10),
+        date=datetime.date(2023, 1, 10),
+        start_time=datetime.time(13, 30, 0),
+        finish_time=(datetime.datetime.combine(datetime.date.min,
+                                               datetime.time(13, 30, 0)) + datetime.timedelta(
+            minutes=10)).time(),
         status=False))
     db.session.add(Consultation(
         teacher_id=db.session.query(User).filter(User.surname == "Петров").first().id,
-        consultation_start_time=datetime.datetime(2023, 1, 10, 13, 40, 0),
-        consultation_finish_time=datetime.datetime(2023, 1, 10, 13, 40, 0) + datetime.timedelta(
-            minutes=10)))
+        date=datetime.date(2023, 1, 10),
+        start_time=datetime.time(13, 40, 0),
+        finish_time=(datetime.datetime.combine(datetime.date.min,
+                                               datetime.time(13, 40, 0)) + datetime.timedelta(
+            minutes=10)).time()))
 
     db.session.add(Consultation(
         teacher_id=db.session.query(User).filter(User.surname == "Иванов").first().id,
         parent_id=db.session.query(User).filter(User.surname == "Смирнов").first().id,
-        consultation_start_time=datetime.datetime(2023, 1, 10, 13, 30, 0),
-        consultation_finish_time=datetime.datetime(2023, 1, 10, 13, 30, 0) + datetime.timedelta(
-            minutes=10),
+        date=datetime.date(2023, 1, 10),
+        start_time=datetime.time(13, 30, 0),
+        finish_time=(datetime.datetime.combine(datetime.date.min,
+                                               datetime.time(13, 30, 0)) + datetime.timedelta(
+            minutes=10)).time(),
         status=False))
     db.session.add(Consultation(
         teacher_id=db.session.query(User).filter(User.surname == "Иванов").first().id,
-        consultation_start_time=datetime.datetime(2023, 1, 10, 13, 40, 0),
-        consultation_finish_time=datetime.datetime(2023, 1, 10, 13, 40, 0) + datetime.timedelta(
-            minutes=10)))
+        date=datetime.date(2023, 1, 10),
+        start_time=datetime.time(13, 40, 0),
+        finish_time=(datetime.datetime.combine(datetime.date.min,
+                                               datetime.time(13, 40, 0)) + datetime.timedelta(
+            minutes=10)).time()))
     db.session.commit()

@@ -86,13 +86,13 @@ class Parent(db.Model):
     __tablename__ = 'parents'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True, index=True)
-    parent_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("users.id"), index=True)
-    parent = orm.relation('User')
+    user_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("users.id"), index=True)
+    user = orm.relation('User')
     class_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("classes.id"), index=True)
-    Class = orm.relation('Class')
+    class_ = orm.relation('Class')
 
     def __repr__(self):
-        return '<Parent %r>' % "; ".join(map(str, [self.parent_id, self.class_id]))
+        return '<Parent %r>' % "; ".join(map(str, [self.user_id, self.class_id]))
 
 
 class TeacherSubjectsClasses(db.Model):
@@ -105,7 +105,7 @@ class TeacherSubjectsClasses(db.Model):
                                    index=True)
     subject = orm.relation('Subject')
     class_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("classes.id"), index=True)
-    Class = orm.relation('Class')
+    class_ = orm.relation('Class')
 
     def __repr__(self):
         return '<TeacherSubjectsClasses %r>' % "; ".join(
@@ -121,14 +121,16 @@ class Consultation(db.Model):
     teacher = orm.relation(User, foreign_keys=teacher_id)
     parent_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("users.id"), index=True)
     parent = orm.relationship(User, foreign_keys=parent_id)
-    consultation_start_time = sqlalchemy.Column(sqlalchemy.DateTime)
-    consultation_finish_time = sqlalchemy.Column(sqlalchemy.DateTime)
+    date = sqlalchemy.Column(sqlalchemy.Date)
+    start_time = sqlalchemy.Column(sqlalchemy.Time)
+    finish_time = sqlalchemy.Column(sqlalchemy.Time)
     status = sqlalchemy.Column(sqlalchemy.Boolean, default=True)
+    url = sqlalchemy.Column(sqlalchemy.String)
 
     def __repr__(self):
         return '<Consultation %r>' % "; ".join(
             map(str, [self.id, self.teacher_id, self.parent_id, self.status,
-                      self.consultation_start_time, self.consultation_finish_time]))
+                      self.start_time, self.finish_time]))
 
 # TODO Формочка для админа
 # TODO разобраться c login`ами и role`ами
