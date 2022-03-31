@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SelectField, SubmitField
-from wtforms.validators import DataRequired
+from wtforms import StringField, SelectField, SubmitField, PasswordField
+from wtforms.validators import DataRequired, InputRequired
 
 
 class RegisterTypeForm(FlaskForm):
@@ -21,3 +21,14 @@ class RegisterTeacherForm(FlaskForm):
     subjects = SelectField("Предметы", choices=[("math", "Математика"), ("physics", "Физика"),
                                                 ("it", "Информатика")])
     submit = SubmitField("Зарегистрироваться")
+
+
+class RegistrationParentForm(FlaskForm):
+    username = StringField('Имя', validators=[InputRequired()])
+    usersurename = StringField('Фамилия', validators=[InputRequired()])
+    usermiddlename = StringField('Отчество', validators=[InputRequired()])
+    password = PasswordField('Password', validators=[InputRequired()])
+    classes = []
+
+    def __init__(self, class_list):
+        self.classes = SelectField("Класс", choices=class_list)

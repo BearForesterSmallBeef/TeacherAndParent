@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2 class="mb-3">Учителя</h2>
+
+{% for teacher in teachers %}
+
+    <div class="card mb-2 text-dark bg-light">
+        <div class="card-body">
+            <div class="text-capitalize">{{ teacher.full_name }}</div>
+            <a href="{{ url_for('main.parent_consultations', teacher=teacher.id) }}" class="hidden stretched-link"></a>
+        </div>
+    </div>
+
+{% endfor %}
+
+{% endblock %}
