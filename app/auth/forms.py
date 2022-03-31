@@ -24,12 +24,9 @@ class RegisterTeacherForm(FlaskForm):
 
 
 class RegistrationParentForm(FlaskForm):
+    login = StringField('Логин', validators=[InputRequired()])
     username = StringField('Имя', validators=[InputRequired()])
     usersurename = StringField('Фамилия', validators=[InputRequired()])
     usermiddlename = StringField('Отчество', validators=[InputRequired()])
     password = PasswordField('Password', validators=[InputRequired()])
-    classes = []
-
-    def __init__(self, class_list):
-        super(RegistrationParentForm, self).__init__()
-        self.classes = SelectField("Класс", choices=class_list)
+    classes = SelectField("Класс", validate_choice=False)

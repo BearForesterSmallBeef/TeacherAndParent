@@ -101,4 +101,6 @@ def create_parent(login, password, name, surname, middle_name=""):
 
 @main.route("/parent_registration", methods=['GET', 'POST'])
 def parent_registration():
-    return render_template("auth/parent_reg.html", form=RegistrationParentForm([(i.name, i.name) for i in db.session.query(Class)]))
+    form = RegistrationParentForm()
+    form.classes.choices = [(i.name, i.name) for i in db.session.query(Class)]
+    return render_template("auth/parent_reg.html", form=form)
