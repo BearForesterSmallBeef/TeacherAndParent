@@ -3,9 +3,11 @@ import datetime
 from flask import Blueprint, render_template, request
 
 from app import db
-from app.models import Subject, User, RolesIds, TeacherSubjectsClasses, Consultation, Parent
+from app.models import Subject, User, RolesIds, TeacherSubjectsClasses, Consultation, Parent, Role
+from app.auth.forms import *
 
 main = Blueprint("main", __name__)
+
 
 
 class ConsultationCard:
@@ -45,7 +47,7 @@ class ConsultationCardParent(ConsultationCard):
                              if consultation.teacher is not None else "")
 
 
-@main.route("/teacher/consultations")
+@main.route("/teachers")
 def teacher_consultations():
     consultations = db.session.query(Consultation).all()
     consultation_cards = map(ConsultationCardTeacher, consultations)
@@ -83,3 +85,20 @@ def get_teachers():
             )
         )
     return render_template("parent/teachers.html", teachers=teachers)
+
+
+def create_parent(login, password, name, surname, middle_name=""):
+    try:
+        db.session.add(
+            User(login=login, password=password,
+                 name=name,
+                 surname=surname, middle_name=middle_name,
+                 role_id=RolesIds.PARENT))
+    except Exception():
+        return 0
+    return 1
+
+
+@main.route("/parent_registration", methods=['GET', 'POST'])
+def parent_registration():
+    return render_template("auth/parent_reg.html", form=RegistrationParentForm)
