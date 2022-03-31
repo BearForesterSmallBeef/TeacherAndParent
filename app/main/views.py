@@ -3,7 +3,7 @@ import datetime
 from flask import Blueprint, render_template, request
 
 from app import db
-from app.models import Subject, User, RolesIds, TeacherSubjectsClasses, Consultation, Parent, Role
+from app.models import *
 from app.auth.forms import *
 
 main = Blueprint("main", __name__)
@@ -101,4 +101,4 @@ def create_parent(login, password, name, surname, middle_name=""):
 
 @main.route("/parent_registration", methods=['GET', 'POST'])
 def parent_registration():
-    return render_template("auth/parent_reg.html", form=RegistrationParentForm)
+    return render_template("auth/parent_reg.html", form=RegistrationParentForm([(i.name, i.name) for i in db.session.query(Class)]))

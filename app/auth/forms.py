@@ -31,4 +31,5 @@ class RegistrationParentForm(FlaskForm):
     classes = []
 
     def __init__(self, class_list):
+        super(RegistrationParentForm, self).__init__()
         self.classes = SelectField("Класс", choices=class_list)
