@@ -149,5 +149,6 @@ class Consultation(db.Model):
             map(str, [self.id, self.teacher_id, self.parent_id, self.status,
                       self.start_time, self.finish_time]))
 
+# TODO Разделить классы на букву и параллель
 # TODO Формочка для админа
 # TODO разобраться c login`ами и role`ами

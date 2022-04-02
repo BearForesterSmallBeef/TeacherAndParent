@@ -28,5 +28,10 @@ class RegistrationParentForm(FlaskForm):
     username = StringField('Имя', validators=[InputRequired()])
     usersurename = StringField('Фамилия', validators=[InputRequired()])
     usermiddlename = StringField('Отчество', validators=[InputRequired()])
-    password = PasswordField('Password', validators=[InputRequired()])
+    password = StringField('Password', validators=[InputRequired()])
     classes = SelectField("Класс", validate_choice=False)
+    submit = SubmitField('Создать новую учетную запись родителя')
+
+
+class BackToParentReg(FlaskForm):
+    submit = SubmitField('Назад')
