@@ -3,6 +3,7 @@ from flask_bootstrap import Bootstrap5
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import MetaData
 from flask_migrate import Migrate
+from flask_login import LoginManager
 
 
 bootstrap = Bootstrap5()
@@ -18,11 +19,14 @@ metadata = MetaData(
 db = SQLAlchemy(metadata=metadata)
 migrate = Migrate()
 
+#login_manager = LoginManager()
+
 
 def create_app(config_type):
     app = Flask(__name__)
     app.config.from_object(config_type)
 
+    #login_manager.init_app(app)
     bootstrap.init_app(app)
     db.init_app(app)
     migrate.init_app(app, db, render_as_batch=True)

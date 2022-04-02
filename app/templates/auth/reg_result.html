@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% from 'bootstrap5/form.html' import render_form %}
+
+{% block content %}
+
+<h2>{{ header | default("Создание учетной записи для родителя") }}</h2>
+{% if flag %}
+        <div class="alert alert-success" role="alert">Учетная запись для родителя успешна создана</div>
+ {% else %}
+        <div class="alert alert-danger" role="alert">ПРОИЗОШЕЛ СБОЙ, пожалуйста, повторите
+                                                                       попытку позже</div>
+ {% endif %}
+{{ render_form(form) }}
+
+{% endblock %}

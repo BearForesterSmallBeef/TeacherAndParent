@@ -1,7 +1,8 @@
 from flask import Blueprint, render_template, request, redirect
 
 from app import db
-from app.models import Subject, User, RolesIds, TeacherSubjectsClasses, Consultation, Parent
+from app.models import Class, User, Parent, Consultation, TeacherSubjectsClasses, Subject, RolesIds
+from app.auth.forms import *
 
 main = Blueprint("main", __name__)
 
