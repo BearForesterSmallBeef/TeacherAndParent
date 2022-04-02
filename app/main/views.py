@@ -1,6 +1,4 @@
-import datetime
-
-from flask import Blueprint, render_template, request
+from flask import Blueprint, render_template, request, redirect
 
 from app import db
 from app.models import Subject, User, RolesIds, TeacherSubjectsClasses, Consultation, Parent
@@ -23,9 +21,9 @@ class ConsultationCard:
 
 
 class ConsultationCardTeacher(ConsultationCard):
-    fields_labels = ((("parent_name", "Родитель"), ) +
+    fields_labels = ((("parent_name", "Родитель"),) +
                      ConsultationCard.fields_labels +
-                     (("class_", "Класс"), ))
+                     (("class_", "Класс"),))
 
     def __init__(self, consultation: Consultation):
         super(ConsultationCardTeacher, self).__init__(consultation)
@@ -36,7 +34,7 @@ class ConsultationCardTeacher(ConsultationCard):
 
 
 class ConsultationCardParent(ConsultationCard):
-    fields_labels = ((("teacher_name", "Учитель"), ) +
+    fields_labels = ((("teacher_name", "Учитель"),) +
                      ConsultationCard.fields_labels)
 
     def __init__(self, consultation: Consultation):
@@ -83,3 +81,13 @@ def get_teachers():
             )
         )
     return render_template("parent/teachers.html", teachers=teachers)
+
+
+@main.route("/about")
+def about():
+    return render_template("about.html")
+
+
+@main.route("/")
+def index():
+    return redirect("/about")
