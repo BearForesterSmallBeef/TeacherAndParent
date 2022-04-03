@@ -21,3 +21,71 @@
     </div>
 </div>
 {% endblock %}
+
+{% block content %}
+
+<div class="container py-5">
+    <div class="row">
+        <div class="col">
+            <img src="{{ url_for('static', filename='img/about.jpg') }}" class="w-100 about-image" alt="О Проекте">
+        </div>
+        <div class="col">
+            <h2>О Проекте</h2>
+            <div class="text-muted">Организация информация</div>
+            <div>
+                Сайт позволяет создать удобную систему консультаций для учителей и родителей. Учитель может распределять время для консультаций, а родитель – выбрать нужный сеанс.
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid p-0 py-5 bg-secondary bg-opacity-25">
+    <div class="container w-50">
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <h1 class="fw-bold text-capitalize mb-5">
+                    Особенности
+                </h1>
+                <h5 class="mb-5 lead">
+                    Что мы вам можем предложить?
+                </h5>
+            </div>
+        </div>
+    </div>
+    <div class="container py-5">
+        <div class="row d-flex align-items-center justify-content-center text-center">
+            <div class="col">
+                <img src="{{ url_for('static', filename='img/comfort.jpg') }}" class="w-100" alt="Удобство">
+            </div>
+            <div class="col">
+                <h2>Удобство</h2>
+                <div class="text-muted">
+                    Не нужно обзванивать учителей. Просто зайдите на сайт, и вы увиде доступные консультации. Из дома!
+                </div>
+            </div>
+        </div>
+        <div class="row d-flex align-items-center justify-content-center text-center">
+            <div class="col">
+                <h2>Распределение Времени</h2>
+                <div class="text-muted">
+                    Учитель может точно распределить время для консультаций
+                </div>
+            </div>
+            <div class="col">
+                <img src="{{ url_for('static', filename='img/schedule.jpg') }}" class="w-100" alt="Распределение Времени">
+            </div>
+        </div>
+        <div class="row d-flex align-items-center justify-content-center text-center">
+            <div class="col">
+                <img src="{{ url_for('static', filename='img/filter.jpg') }}" class="w-100" alt="Легко Найти">
+            </div>
+            <div class="col">
+                <h2>Легко Найти</h2>
+                <div class="text-muted">
+                    Родитель может запросто найти нужную консультацию, ведь вся информация разложена по полочкам.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

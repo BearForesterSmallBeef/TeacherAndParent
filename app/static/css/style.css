@@ -30,3 +30,7 @@
 .face-hr {
     border-top: 3px solid white;
 }
+
+.about-image {
+    object-fit: cover;
+}
