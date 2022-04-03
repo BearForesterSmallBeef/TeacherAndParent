@@ -1,9 +1,9 @@
 from flask import Blueprint, redirect, render_template, request
 
-from .forms import RegisterTypeForm, RegisterParentForm, RegisterTeacherForm, RegistrationParentForm, BackToParentReg
 from app import db
-from app.models import Class, User, Parent, Consultation, TeacherSubjectsClasses, Subject, RolesIds
-
+from app.models import Class, User, Parent, RolesIds
+from .forms import (RegisterTypeForm, RegisterParentForm, RegisterTeacherForm,
+                    RegistrationParentForm, BackToParentReg)
 
 auth = Blueprint("auth", __name__)
 
@@ -36,7 +36,7 @@ def register_teacher():
                            header="Регистрация. Учитель.")
 
 
-def create_parent(login, password, name, surname, classes,  middle_name=""):
+def create_parent(login, password, name, surname, classes, middle_name=""):
     try:
         db.session.add(
             User(login=login, password=password,
@@ -60,7 +60,8 @@ def parent_registration():
     form.classes.choices = sorted([(i.name, i.name) for i in db.session.query(Class)],
                                   key=lambda x: int(x[0].split("-")[0]))
     if form.validate_on_submit():
-        flag = create_parent(request.form["login"], request.form["password"], request.form["username"],
+        flag = create_parent(request.form["login"], request.form["password"],
+                             request.form["username"],
                              request.form["usersurename"], request.form["classes"],
                              middle_name=str(request.form["usermiddlename"]))
         return redirect(f"/reg_result/{flag}")

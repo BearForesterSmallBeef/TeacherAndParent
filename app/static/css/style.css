@@ -20,17 +20,25 @@
     height: 100%;
 }
 
-.face-image {
-    background-image: url("../img/face-image.jpg");
+.intro-image {
+    background-image: url("../img/intro.jpg");
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center center;
 }
 
-.face-hr {
+.intro-hr {
     border-top: 3px solid white;
 }
 
 .about-image {
     object-fit: cover;
+}
+
+.down-icon {
+    display: inline-block;
+    width: 128px;
+    height: 120px;
+    background-image: url("../img/chevron-down.svg");
+    background-repeat: no-repeat;
 }

@@ -1,8 +1,7 @@
-from flask import Blueprint, render_template, request, redirect
+from flask import Blueprint, render_template, request
 
 from app import db
-from app.models import Class, User, Parent, Consultation, TeacherSubjectsClasses, Subject, RolesIds
-from app.auth.forms import *
+from app.models import User, Parent, Consultation, TeacherSubjectsClasses, Subject, RolesIds
 
 main = Blueprint("main", __name__)
 
@@ -91,4 +90,4 @@ def about():
 
 @main.route("/")
 def index():
-    return redirect("/about")
+    return render_template("index.html")

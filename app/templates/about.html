@@ -2,24 +2,9 @@
 
 {% block header %}
 {{ super() }}
-<div class="view face-image">
-    <div class="mask bg-primary bg-opacity-50 d-flex justify-content-center align-items-center">
-        <div class="container w-50">
-            <div class="row">
-                <div class="col-md-12 text-white text-center">
-                    <h1 class="fw-bold text-capitalize mb-3">
-                        Учитель и Родитель
-                    </h1>
-                    <hr class="face-hr w-50 mx-auto">
-                    <h5 class="mb-5 lead">
-                        Позволяем поднять организацию родительского собрания на новый уровень
-                    </h5>
-                    <a href="/consultations" class="btn btn-outline-light btn-lg">Приступить</a>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+{% set btn_url = "#about" %}
+{% set btn_text = "Подробнее" %}
+{% include 'intro.html' %}
 {% endblock %}
 
 {% block content %}
@@ -30,7 +15,7 @@
             <img src="{{ url_for('static', filename='img/about.jpg') }}" class="w-100 about-image" alt="О Проекте">
         </div>
         <div class="col">
-            <h2>О Проекте</h2>
+            <h2 id="about">О Проекте</h2>
             <div class="text-muted">Организация информация</div>
             <div>
                 Сайт позволяет создать удобную систему консультаций для учителей и родителей. Учитель может распределять время для консультаций, а родитель – выбрать нужный сеанс.
@@ -87,5 +72,18 @@
             </div>
         </div>
     </div>
+    <div class="container w-50 py-5">
+        <div class="row d-flex align-items-center justify-content-center text-center">
+            <div class="col-9">
+                <div class="fs-2">
+                    Пора начать пользоваться. Приступим?
+                </div>
+            </div>
+            <div class="col-3">
+                <a href="/consultations" class="btn btn-primary btn-lg">Приступить</a>
+            </div>
+        </div>
+    </div>
 </div>
+
 {% endblock %}
