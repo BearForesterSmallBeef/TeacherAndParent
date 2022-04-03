@@ -1,0 +1,32 @@
+.view {
+    position: relative;
+    overflow: hidden;
+    cursor: default;
+    height: 100vh;
+}
+/* https://mdbootstrap.com/previews/docs/latest/html/intros/intro-minimalistic.html */
+.view .mask {
+    background-attachment: fixed;
+    bottom: 0;
+}
+
+.view .mask {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+}
+
+.face-image {
+    background-image: url("../img/face-image.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center center;
+}
+
+.face-hr {
+    border-top: 3px solid white;
+}

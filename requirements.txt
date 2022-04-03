@@ -5,4 +5,3 @@ bootstrap-flask==2.0.1
 sqlalchemy==1.4.31
 Flask-SQLAlchemy
 flask-migrate
-flask_login
