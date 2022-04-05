@@ -10,6 +10,7 @@
         <div class="alert alert-danger" role="alert">ПРОИЗОШЕЛ СБОЙ, пожалуйста, повторите
                                                                        попытку позже</div>
  {% endif %}
-{{ render_form(form) }}
-
+<form method="POST" action="">
+    <input class="btn btn-primary" type="submit" name="Назад" value="Назад">
+</form>
 {% endblock %}
