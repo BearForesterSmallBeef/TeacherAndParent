@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SelectField, SubmitField, PasswordField
+from wtforms import StringField, SelectField, SubmitField, PasswordField, BooleanField
 from wtforms.validators import DataRequired, InputRequired
 
 
@@ -33,5 +33,9 @@ class RegistrationParentForm(FlaskForm):
     submit = SubmitField('Создать новую учетную запись родителя')
 
 
-class BackToParentReg(FlaskForm):
-    submit = SubmitField('Назад')
+class LoginForm(FlaskForm):
+    login = StringField('Логин', validators=[InputRequired()])
+    password = PasswordField('Password', validators=[InputRequired()])
+    remember_me = BooleanField('Запомнить меня')
+    submit = SubmitField('Войти')
+
