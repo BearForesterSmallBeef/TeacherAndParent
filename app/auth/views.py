@@ -3,7 +3,7 @@ from flask import Blueprint, redirect, render_template, request
 from app import db
 from app.models import Class, User, Parent, RolesIds
 from .forms import (RegisterTypeForm, RegisterParentForm, RegisterTeacherForm,
-                    RegistrationParentForm, BackToParentReg)
+                    RegistrationParentForm, LoginForm)
 
 auth = Blueprint("auth", __name__)
 
@@ -65,13 +65,19 @@ def parent_registration():
                              request.form["usersurename"], request.form["classes"],
                              middle_name=str(request.form["usermiddlename"]))
         return redirect(f"/reg_result/{flag}")
-    return render_template("auth/parent_reg.html", form=form)
+    return render_template("auth/auth.html", form=form)
 
 
 @auth.route("/reg_result/<ok>", methods=['GET', 'POST'])
 def reg_result(ok):
-    form = BackToParentReg()
     flag = bool(int(ok))
-    if form.validate_on_submit():
-        return redirect("/parent_registration")
-    return render_template("auth/reg_result.html", form=form, flag=flag)
+    if request.form.get('Назад') == 'Назад':
+        return redirect('/parent_registration')
+    return render_template("auth/reg_result.html", flag=flag)
+
+
+@auth.route("/user_login", methods=['GET', 'POST'])
+def login():
+    form = LoginForm()
+    text = "Вход в учетную запись"
+    return render_template("auth/auth.html", form=form, header=text)
