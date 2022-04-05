@@ -51,7 +51,7 @@ def parent_registration():
             flash("Учетная запись для родителя успешна создана", category="success")
         else:
             flash("ПРОИЗОШЕЛ СБОЙ, пожалуйста, повторите попытку позже", category="error")
-        return redirect(f"/")
+        return redirect(f"/signup")
     return render_template("auth/auth.html", form=form)
 
 
