@@ -1,6 +1,22 @@
 {% extends 'base.html' %}
 
-{% block header %}
-{{ super() }}
-{% include 'intro.html' %}
+{% block content %}
+<div class="view intro-image">
+    <div class="mask bg-primary bg-opacity-50 d-flex justify-content-center align-items-center">
+        <div class="container w-50">
+            <div class="row">
+                <div class="col-md-12 text-white text-center">
+                    <h1 class="fw-bold text-capitalize mb-3">
+                        Учитель и Родитель
+                    </h1>
+                    <hr class="intro-hr w-50 mx-auto">
+                    <h5 class="mb-5 lead">
+                        Позволяем поднять организацию родительского собрания на новый уровень
+                    </h5>
+                    <a href="{{ btn_url | default('/consultations')}}" class="btn btn-outline-light btn-lg">{{ btn_text | default('Приступить') }}</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
