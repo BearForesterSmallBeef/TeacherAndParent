@@ -11,6 +11,7 @@
         {% block styles %}
             <!-- Bootstrap CSS -->
             {{ bootstrap.load_css() }}
+            <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
         {% endblock %}
 
         <title>{{ title | default("TeacherAndParent") }}</title>
@@ -18,33 +19,37 @@
     </head>
 
     <body class="d-flex flex-column min-vh-100">
-        <nav class="navbar navbar-dark bg-dark">
-            <div class="container-fluid">
-                <a class="navbar-brand" href="#">TeacherAndParent</a>
-                    <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasMenu" aria-controls="offcanvasMenu">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-                <div class="offcanvas offcanvas-end bg-dark text-white" tabindex="-1" id="offcanvasMenu" aria-labelledby="offcanvasMenuLabel">
-                    <div class="offcanvas-header">
-                        <h5 class="offcanvas-title" id="offcanvasMenuLabel">Меню</h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-                    </div>
-                    <div class="offcanvas-body">
-                        <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
-                            <li class="nav-item">
-                                <a class="nav-link active" aria-current="page" href="#">Home</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link active" aria-current="page" href="#">About</a>
-                            </li>
-                        </ul>
+        <header>
+            {% block header %}
+            <nav class="navbar navbar-dark bg-dark fixed-top">
+                <div class="container-fluid">
+                    <a class="navbar-brand" href="/">TeacherAndParent</a>
+                        <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasMenu" aria-controls="offcanvasMenu">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                    <div class="offcanvas offcanvas-end bg-dark text-white" tabindex="-1" id="offcanvasMenu" aria-labelledby="offcanvasMenuLabel">
+                        <div class="offcanvas-header">
+                            <h5 class="offcanvas-title" id="offcanvasMenuLabel">Меню</h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                        </div>
+                        <div class="offcanvas-body">
+                            <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+                                <li class="nav-item">
+                                    <a class="nav-link active" aria-current="page" href="/">Home</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link active" aria-current="page" href="/about">About</a>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </nav>
+            </nav>
+            {% endblock %}
+        </header>
         {{ render_messages(container=true) }}
         <!-- Your page content -->
-        <main role="main" class="container">
+        <main role="main" class="container-fluid p-0">
             {% block content %}{% endblock %}
         </main>
 
