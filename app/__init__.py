@@ -3,6 +3,7 @@ from flask_bootstrap import Bootstrap5
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import MetaData
 from flask_migrate import Migrate
+from flask_login import LoginManager
 
 
 bootstrap = Bootstrap5()
@@ -17,6 +18,9 @@ metadata = MetaData(
 )
 db = SQLAlchemy(metadata=metadata)
 migrate = Migrate()
+login_manager = LoginManager()
+login_manager.login_view = 'auth.login'
+login_manager.login_message = "Вы не авторизован. Пожалуйста, войдите."
 
 
 def create_app(config_type):
@@ -26,6 +30,7 @@ def create_app(config_type):
     bootstrap.init_app(app)
     db.init_app(app)
     migrate.init_app(app, db, render_as_batch=True)
+    login_manager.init_app(app)
 
     from .main.views import main
     from .auth.views import auth

@@ -3,8 +3,9 @@ import datetime
 import sqlalchemy
 from sqlalchemy import orm
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import UserMixin
 
-from app import db
+from app import db, login_manager
 
 
 class Subject(db.Model):
@@ -47,7 +48,7 @@ class RolesIds:
     PARENT = 4
 
 
-class User(db.Model):
+class User(db.Model, UserMixin):
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True, index=True)
@@ -72,7 +73,7 @@ class User(db.Model):
         self.hashed_password = generate_password_hash(password)
 
     def verify_password(self, password):
-        return check_password_hash(self.password_hash, password)
+        return check_password_hash(self.hashed_password, password)
 
     @property
     def full_name(self):
@@ -90,6 +91,11 @@ class User(db.Model):
         from werkzeug.security import check_password_hash
 
         return check_password_hash(hash, password)
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
 
 
 class Parent(db.Model):

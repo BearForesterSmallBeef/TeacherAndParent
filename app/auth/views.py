@@ -1,9 +1,9 @@
-from flask import Blueprint, redirect, render_template, request, flash
+from flask import Blueprint, redirect, render_template, request, flash, url_for
+from flask_login import login_user, login_required, logout_user
 
 from app import db
 from app.models import Class, User, Parent, RolesIds
-from .forms import (RegisterTypeForm, RegisterParentForm, RegisterTeacherForm,
-                    RegistrationParentForm, LoginForm)
+from .forms import RegisterTypeForm, RegistrationParentForm, LoginForm
 
 auth = Blueprint("auth", __name__)
 
@@ -66,5 +66,22 @@ def reg_result(ok):
 @auth.route("/login", methods=['GET', 'POST'])
 def login():
     form = LoginForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(login=form.login.data.lower()).first()
+        if user is not None and user.verify_password(form.password.data):
+            login_user(user, form.remember_me.data)
+            next = request.args.get('next')
+            if next is None or not next.startswith('/'):
+                next = url_for('main.index')
+            return redirect(next)
+        flash('Неверный логин или пароль.')
     text = "Вход в учетную запись"
     return render_template("auth/auth.html", form=form, header=text)
+
+
+@auth.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    flash('You have been logged out.')
+    return redirect(url_for('main.index'))
