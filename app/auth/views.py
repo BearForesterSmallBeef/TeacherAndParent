@@ -69,12 +69,13 @@ def login():
     if form.validate_on_submit():
         user = User.query.filter_by(login=form.login.data.lower()).first()
         if user is not None and user.verify_password(form.password.data):
+            flash("Вы успешно авторизовались.", category="success")
             login_user(user, form.remember_me.data)
             next = request.args.get('next')
             if next is None or not next.startswith('/'):
                 next = url_for('main.index')
             return redirect(next)
-        flash('Неверный логин или пароль.')
+        flash('Неверный логин или пароль.', category="error")
     text = "Вход в учетную запись"
     return render_template("auth/auth.html", form=form, header=text)
 
@@ -83,5 +84,5 @@ def login():
 @login_required
 def logout():
     logout_user()
-    flash('You have been logged out.')
+    flash('Вы успешно вышли из аккаунта', category="success")
     return redirect(url_for('main.index'))
