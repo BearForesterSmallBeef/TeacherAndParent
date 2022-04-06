@@ -1,4 +1,5 @@
-from flask import Blueprint, render_template, request
+from flask import Blueprint, render_template, request, redirect, url_for, Markup
+from flask_login import current_user, login_required
 
 from app import db
 from app.models import User, Parent, Consultation, TeacherSubjectsClasses, Subject, RolesIds
@@ -11,6 +12,7 @@ class ConsultationCard:
         ("date", "Дата"),
         ("time", "Время"),
         ("duration", "Продолжительность"),
+        ("url", "Ссылка"),
     )
 
     def __init__(self, consultation: Consultation):
@@ -18,6 +20,8 @@ class ConsultationCard:
         self.date = consultation.date.strftime("%d.%m.%Y")
         self.time = consultation.start_time.strftime("%H:%M")
         self.duration = str(consultation.duration // 60) + " мин"
+        url = consultation.url if consultation.url is not None else ""
+        self.url = Markup(f"<a href='{url}'>{url}</a>")
 
 
 class ConsultationCardTeacher(ConsultationCard):
@@ -81,6 +85,17 @@ def get_teachers():
             )
         )
     return render_template("parent/teachers.html", teachers=teachers)
+
+
+@main.route("/consultations")
+@login_required
+def get_consultations():
+    if current_user.role_id == RolesIds.TEACHER:
+        return redirect(url_for(".teacher_consultations"))
+    elif current_user.role_id == RolesIds.PARENT:
+        return redirect(url_for(".parent_consultations"))
+    else:
+        return redirect(url_for(".index"))
 
 
 @main.route("/about")

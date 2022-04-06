@@ -20,7 +20,8 @@ db = SQLAlchemy(metadata=metadata)
 migrate = Migrate()
 login_manager = LoginManager()
 login_manager.login_view = 'auth.login'
-login_manager.login_message = "Вы не авторизован. Пожалуйста, войдите."
+login_manager.login_message = "Вы не авторизованы. Пожалуйста, войдите."
+login_manager.login_message_category = "error"
 
 
 def create_app(config_type):

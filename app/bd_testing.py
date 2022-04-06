@@ -122,7 +122,9 @@ with app.app_context():
         finish_time=(datetime.datetime.combine(datetime.date.min,
                                                datetime.time(13, 30, 0)) + datetime.timedelta(
             minutes=10)).time(),
-        status=False))
+        status=False,
+        url="https://zeem.com/1"
+    ))
     db.session.add(Consultation(
         teacher_id=db.session.query(User).filter(User.surname == "Петров").first().id,
         date=datetime.date(2023, 1, 10),
@@ -139,7 +141,9 @@ with app.app_context():
         finish_time=(datetime.datetime.combine(datetime.date.min,
                                                datetime.time(13, 30, 0)) + datetime.timedelta(
             minutes=10)).time(),
-        status=False))
+        status=False,
+        url="https://zeem.com/2"
+    ))
     db.session.add(Consultation(
         teacher_id=db.session.query(User).filter(User.surname == "Иванов").first().id,
         date=datetime.date(2023, 1, 10),
