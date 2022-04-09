@@ -1,15 +1,31 @@
-from flask import Blueprint, redirect, render_template, request, flash, url_for
+from flask import (Blueprint, redirect, render_template, request, flash, url_for, current_app,
+                   abort)
 from flask_login import login_user, login_required, logout_user
+from flask_principal import identity_changed, Identity, AnonymousIdentity, Permission, ActionNeed
 
 from app import db
-from app.models import Class, User, Parent, RolesIds
+from app.models import Class, User, Parent, RolesIds, Permissions
 from .forms import RegisterTypeForm, RegistrationParentForm, LoginForm
+from .utils import permissions_accepted, permissions_required
 
 auth = Blueprint("auth", __name__)
 
 
-@auth.route("/signup", methods=["GET", 'POST'])
-def signup_user_status():
+@auth.route("/signup")
+@permissions_accepted(Permissions.CREATE_PARENTS, Permissions.CREATE_TEACHERS)
+def signup():
+    if (Permission(ActionNeed(Permissions.CREATE_TEACHERS)).can() and
+            Permission(ActionNeed(Permissions.CREATE_PARENTS)).can()):
+        return redirect(url_for(".head_choose_signup_type"))
+    elif Permission(ActionNeed(Permissions.CREATE_PARENTS)).can():
+        return redirect(url_for(".parent_registration"))
+    else:
+        abort(403)
+
+
+@auth.route("/signup/head_choose", methods=["GET", 'POST'])
+@permissions_required(Permissions.CREATE_PARENTS, Permissions.CREATE_TEACHERS)
+def head_choose_signup_type():
     register_form = RegisterTypeForm()
     if register_form.validate_on_submit():
         user_status = register_form.user_status.data
@@ -37,6 +53,7 @@ def create_parent(login, password, name, surname, classes, middle_name=""):
 
 
 @auth.route("/signup/parent", methods=['GET', 'POST'])
+@permissions_required(Permissions.CREATE_PARENTS)
 def parent_registration():
     form = RegistrationParentForm()
     form.classes.choices = sorted([(i.name, i.name) for i in db.session.query(Class)],
@@ -55,26 +72,19 @@ def parent_registration():
     return render_template("auth/auth.html", form=form)
 
 
-@auth.route("/signup/parent/reg_result/<ok>", methods=['GET', 'POST'])
-def reg_result(ok):
-    flag = bool(int(ok))
-    if request.form.get('Назад') == 'Назад':
-        return redirect('/signup/parent')
-    return render_template("auth/reg_result.html", flag=flag)
-
-
 @auth.route("/login", methods=['GET', 'POST'])
 def login():
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(login=form.login.data.lower()).first()
         if user is not None and user.verify_password(form.password.data):
-            flash("Вы успешно авторизовались.", category="success")
             login_user(user, form.remember_me.data)
-            next = request.args.get('next')
-            if next is None or not next.startswith('/'):
-                next = url_for('main.index')
-            return redirect(next)
+            flash("Вы успешно авторизовались.", category="success")
+            identity_changed.send(current_app._get_current_object(), identity=Identity(user.id))
+            nxt = request.args.get('next')
+            if nxt is None or not nxt.startswith('/'):
+                nxt = url_for('main.index')
+            return redirect(nxt)
         flash('Неверный логин или пароль.', category="error")
     text = "Вход в учетную запись"
     return render_template("auth/auth.html", form=form, header=text)
@@ -84,5 +94,6 @@ def login():
 @login_required
 def logout():
     logout_user()
+    identity_changed.send(current_app._get_current_object(), identity=AnonymousIdentity())
     flash('Вы успешно вышли из аккаунта', category="success")
     return redirect(url_for('main.index'))
