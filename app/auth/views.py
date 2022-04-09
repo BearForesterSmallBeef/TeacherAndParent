@@ -1,7 +1,6 @@
-from flask import (Blueprint, redirect, render_template, request, flash, url_for, current_app,
+from flask import (Blueprint, redirect, render_template, request, flash, url_for,
                    abort)
-from flask_login import login_user, login_required, logout_user
-from flask_principal import identity_changed, Identity, AnonymousIdentity, Permission, ActionNeed
+from flask_login import login_user, login_required, logout_user, current_user
 
 from app import db
 from app.models import Class, User, Parent, RolesIds, Permissions
@@ -14,10 +13,10 @@ auth = Blueprint("auth", __name__)
 @auth.route("/signup")
 @permissions_accepted(Permissions.CREATE_PARENTS, Permissions.CREATE_TEACHERS)
 def signup():
-    if (Permission(ActionNeed(Permissions.CREATE_TEACHERS)).can() and
-            Permission(ActionNeed(Permissions.CREATE_PARENTS)).can()):
+    if (current_user.can(Permissions.CREATE_PARENTS) and
+            current_user.can(Permissions.CREATE_TEACHERS)):
         return redirect(url_for(".head_choose_signup_type"))
-    elif Permission(ActionNeed(Permissions.CREATE_PARENTS)).can():
+    elif current_user.can(Permissions.CREATE_PARENTS):
         return redirect(url_for(".parent_registration"))
     else:
         abort(403)
@@ -80,7 +79,6 @@ def login():
         if user is not None and user.verify_password(form.password.data):
             login_user(user, form.remember_me.data)
             flash("Вы успешно авторизовались.", category="success")
-            identity_changed.send(current_app._get_current_object(), identity=Identity(user.id))
             nxt = request.args.get('next')
             if nxt is None or not nxt.startswith('/'):
                 nxt = url_for('main.index')
@@ -94,6 +92,5 @@ def login():
 @login_required
 def logout():
     logout_user()
-    identity_changed.send(current_app._get_current_object(), identity=AnonymousIdentity())
     flash('Вы успешно вышли из аккаунта', category="success")
     return redirect(url_for('main.index'))

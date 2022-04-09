@@ -1,4 +1,5 @@
 import datetime
+from functools import singledispatchmethod
 
 import sqlalchemy
 from flask_login import UserMixin
@@ -122,6 +123,14 @@ class User(db.Model, UserMixin):
 
     def can(self, perm):
         return self.role is not None and self.role.has_permission(perm)
+
+    @singledispatchmethod
+    def has_role(self, role: str):
+        return self.role.name == role
+
+    @has_role.register
+    def _(self, role: int):
+        return self.role_id == role
 
     def __repr__(self):
         return '<User %r>' % "; ".join(map(str, [self.id, self.login, self.surname, self.role_id]))
