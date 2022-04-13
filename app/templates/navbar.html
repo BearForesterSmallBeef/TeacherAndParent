@@ -21,8 +21,13 @@
             <div class="offcanvas-body">
                 <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
                     {{ render_nav_item('main.index', 'Главная') }}
+                    {% if current_user.is_authenticated %}
+                        {{ render_nav_item('main.get_consultations', 'Консультации') }}
+                    {% endif %}
+                    {% for item_view, item_label in g.nav_items %}
+                        {{ render_nav_item(item_view, item_label) }}
+                    {% endfor %}
                     {{ render_nav_item('main.about', 'О Проекте') }}
-                    {{ render_nav_item('auth.signup_user_status', 'Регистрация') }}
                 </ul>
             </div>
         </div>

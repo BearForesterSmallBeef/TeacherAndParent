@@ -6,3 +6,5 @@ sqlalchemy==1.4.31
 Flask-SQLAlchemy
 flask-migrate
 flask-login==0.6.0
+blinker==1.4
+flask-principal==0.4.0

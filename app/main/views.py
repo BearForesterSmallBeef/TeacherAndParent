@@ -1,10 +1,21 @@
-from flask import Blueprint, render_template, request, redirect, url_for, Markup
+from flask import Blueprint, render_template, request, redirect, url_for, Markup, g
 from flask_login import current_user, login_required
 
 from app import db
 from app.models import User, Parent, Consultation, TeacherSubjectsClasses, Subject, RolesIds
+from app.auth.utils import roles_required
 
 main = Blueprint("main", __name__)
+
+
+@main.before_request
+def change_navbar():
+    if not current_user.is_authenticated:
+        return
+    if current_user.role_id == RolesIds.TEACHER:
+        g.nav_items = [("auth.signup", "Регистрация")]
+    elif current_user.role_id == RolesIds.PARENT:
+        g.nav_items = [("main.get_subjects", "Предметы"), ("main.get_teachers", "Учителя")]
 
 
 class ConsultationCard:
@@ -48,6 +59,7 @@ class ConsultationCardParent(ConsultationCard):
 
 
 @main.route("/teacher/consultations")
+@roles_required("teacher")
 def teacher_consultations():
     consultations = db.session.query(Consultation).all()
     consultation_cards = map(ConsultationCardTeacher, consultations)
@@ -57,6 +69,7 @@ def teacher_consultations():
 
 
 @main.route("/parent/consultations")
+@roles_required("parent")
 def parent_consultations():
     teacher_id = request.args.get("teacher", type=int)
     consultations = db.session.query(Consultation)
