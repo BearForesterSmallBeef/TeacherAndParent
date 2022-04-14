@@ -52,7 +52,8 @@ with app.app_context():
                   "9-3",
                   "9-6"]
     for i in class_list:
-        db.session.add(Class(name=i, about=f"Класс {i} конечно хорош, но 9-4 лучше"))
+        db.session.add(Class(parallel=int(i.split("-")[0]), groups="-".join(map(str, i.split("-")[1:])),
+                             about=f"Класс {i} конечно хорош, но 9-4 лучше"))
 
     Role.insert_roles()
 
@@ -86,29 +87,33 @@ with app.app_context():
 
     db.session.add(
         Parent(user_id=db.session.query(User).filter(User.surname == "Васильев").first().id,
-               class_id=db.session.query(Class).filter(Class.name == "9-4").first().id))
+               class_id=db.session.query(Class).filter(Class.parallel == 9 and Class.groups == "4").first().id))
     db.session.add(
         Parent(user_id=db.session.query(User).filter(User.surname == "Смирнов").first().id,
-               class_id=db.session.query(Class).filter(Class.name == "9-5").first().id))
+               class_id=db.session.query(Class).filter(Class.parallel == 9 and Class.groups == "5").first().id))
 
     for i in range(len(class_list) // 2):
         db.session.add(TeacherSubjectsClasses(
             teacher_id=db.session.query(User).filter(User.surname == "Петров").first().id,
             subject_id=db.session.query(Subject).filter(Subject.name == object_list[0]).first().id,
-            class_id=db.session.query(Class).filter(Class.name == class_list[i]).first().id))
+            class_id=db.session.query(Class).filter(Class.parallel == int(class_list[i].split("-")[0]) and Class.groups
+                                                    == "-".join(map(str, class_list[i].split("-")[1:]))).first().id))
         db.session.add(TeacherSubjectsClasses(
             teacher_id=db.session.query(User).filter(User.surname == "Иванов").first().id,
             subject_id=db.session.query(Subject).filter(Subject.name == object_list[1]).first().id,
-            class_id=db.session.query(Class).filter(Class.name == class_list[i]).first().id))
+            class_id=db.session.query(Class).filter(Class.parallel == int(class_list[i].split("-")[0]) and Class.groups
+                                                    == "-".join(map(str, class_list[i].split("-")[1:]))).first().id))
     for i in range(len(class_list) // 2, len(class_list)):
         db.session.add(TeacherSubjectsClasses(
             teacher_id=db.session.query(User).filter(User.surname == "Петров").first().id,
             subject_id=db.session.query(Subject).filter(Subject.name == object_list[1]).first().id,
-            class_id=db.session.query(Class).filter(Class.name == class_list[i]).first().id))
+            class_id=db.session.query(Class).filter(Class.parallel == int(class_list[i].split("-")[0]) and Class.groups
+                                                    == "-".join(map(str, class_list[i].split("-")[1:]))).first().id))
         db.session.add(TeacherSubjectsClasses(
             teacher_id=db.session.query(User).filter(User.surname == "Иванов").first().id,
             subject_id=db.session.query(Subject).filter(Subject.name == object_list[0]).first().id,
-            class_id=db.session.query(Class).filter(Class.name == class_list[i]).first().id))
+            class_id=db.session.query(Class).filter(Class.parallel == int(class_list[i].split("-")[0]) and Class.groups
+                                                    == "-".join(map(str, class_list[i].split("-")[1:]))).first().id))
 
     db.session.add(Consultation(
         teacher_id=db.session.query(User).filter(User.surname == "Петров").first().id,

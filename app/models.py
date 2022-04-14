@@ -24,7 +24,8 @@ class Class(db.Model):
     __tablename__ = 'classes'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True, index=True)
-    name = db.Column(db.String, nullable=False)
+    parallel = db.Column(db.Integer, index=True)
+    groups = db.Column(db.String, nullable=False)
     about = db.Column(db.String, nullable=True)
 
     def __repr__(self):

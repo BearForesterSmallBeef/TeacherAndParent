@@ -35,13 +35,15 @@ def head_choose_signup_type():
 
 def create_parent(login, password, name, surname, classes, middle_name=""):
     try:
+        parallel = classes[:classes.find("-")]
+        groups = classes[classes.find("-") + 1:]
         db.session.add(
             User(login=login, password=password,
                  name=name,
                  surname=surname, middle_name=middle_name,
                  role_id=RolesIds.PARENT))
         user_id = db.session.query(User).filter(User.login == login).first().id
-        class_id = db.session.query(Class).filter(Class.name == classes).first().id
+        class_id = db.session.query(Class).filter(Class.parallel == parallel and Class.groups == groups).first().id
         db.session.add(
             Parent(user_id=user_id, class_id=class_id))
         db.session.commit()
@@ -55,8 +57,9 @@ def create_parent(login, password, name, surname, classes, middle_name=""):
 @permissions_required(Permissions.CREATE_PARENTS)
 def parent_registration():
     form = RegistrationParentForm()
-    form.classes.choices = sorted([(i.name, i.name) for i in db.session.query(Class)],
-                                  key=lambda x: int(x[0].split("-")[0]))
+    form.classes.choices = sorted([(str(i.parallel) + "-" + i.groups, str(i.parallel) + "-" + i.groups)
+                                   for i in db.session.query(Class)],
+                                  key=lambda x: (int(x[0].split("-")[0]), x[0].split("-")[1]))
     if form.validate_on_submit():
         flag = create_parent(request.form["login"], request.form["password"],
                              request.form["username"],
