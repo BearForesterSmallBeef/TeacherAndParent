@@ -184,7 +184,7 @@ class Consultation(db.Model):
     date = sqlalchemy.Column(sqlalchemy.Date)
     start_time = sqlalchemy.Column(sqlalchemy.Time)
     finish_time = sqlalchemy.Column(sqlalchemy.Time)
-    status = sqlalchemy.Column(sqlalchemy.Boolean, default=True)
+    is_free = sqlalchemy.Column(sqlalchemy.Boolean, default=True)
     url = sqlalchemy.Column(sqlalchemy.String)
 
     @property

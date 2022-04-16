@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% from 'bootstrap5/form.html' import render_form %}
+{% from 'bootstrap5/form.html' import render_field %}
+
+{% block content %}
+
+<h2>{{ header | default("Создание учетной записи для родителя") }}</h2>
+<div class="accordion" id="subjects">
+{% for item in subjects %}
+    <div class="accordion-item">
+    <h2 class="accordion-header" id="heading{{item.id}}">
+      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{item.id}}" aria-expanded="true" aria-controls="collapse{{item.id}}">
+        {{item.name}}
+      </button>
+    </h2>
+    <div id="collapse{{item.id}}" class="accordion-collapse collapse hide" aria-labelledby="heading{{item.id}}" data-bs-parent="#subjects">
+      <div class="accordion-body">
+        {{render_field(form[item.name])}}
+      </div>
+    </div>
+  </div>
+
+{% endfor %}
+</div>
+{% endblock %}

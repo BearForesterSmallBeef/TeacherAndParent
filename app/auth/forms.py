@@ -1,6 +1,19 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SelectField, SubmitField, PasswordField, BooleanField
+from wtforms import StringField, SelectField, SubmitField, PasswordField, BooleanField, SelectMultipleField, widgets
 from wtforms.validators import DataRequired, InputRequired
+
+#from flask import (Blueprint, redirect, render_template, request, flash, url_for,
+#                   abort)
+#from flask_login import login_user, login_required, logout_user, current_user
+#
+#from app import db
+#from app.models import Class, User, Parent, RolesIds, Permissions, Subject
+#from .utils import permissions_accepted, permissions_required
+
+
+class MultiCheckboxField(SelectMultipleField):
+  widget = widgets.ListWidget(prefix_label=False)
+  option_widget = widgets.CheckboxInput()
 
 
 class RegisterTypeForm(FlaskForm):
@@ -39,3 +52,12 @@ class LoginForm(FlaskForm):
     remember_me = BooleanField('Запомнить меня')
     submit = SubmitField('Войти')
 
+
+#class RegistrationTeacherForm(FlaskForm):
+#    form_dict = dict()
+#    classes = [(i.id, str(i.parallel) + "-" + i.groups) for i in db.session.query(Class)]
+#    objects = [i.name for i in db.session.query(Subject)]
+#    for i in objects:
+#        form_dict[i] = MultiCheckboxField(i,
+#                                          choices=classes,
+#                                              coerce=int)

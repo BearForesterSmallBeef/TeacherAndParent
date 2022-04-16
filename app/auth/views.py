@@ -3,9 +3,13 @@ from flask import (Blueprint, redirect, render_template, request, flash, url_for
 from flask_login import login_user, login_required, logout_user, current_user
 
 from app import db
-from app.models import Class, User, Parent, RolesIds, Permissions
+from app.models import Class, User, Parent, RolesIds, Permissions, Subject
 from .forms import RegisterTypeForm, RegistrationParentForm, LoginForm
 from .utils import permissions_accepted, permissions_required
+
+from flask_wtf import FlaskForm
+from wtforms import StringField, SelectField, SubmitField, PasswordField, BooleanField, SelectMultipleField, widgets
+from wtforms.validators import DataRequired, InputRequired
 
 auth = Blueprint("auth", __name__)
 
@@ -97,3 +101,34 @@ def logout():
     logout_user()
     flash('Вы успешно вышли из аккаунта', category="success")
     return redirect(url_for('main.index'))
+
+
+@auth.route('/signup/teacher', methods=['GET', 'POST'])
+def teacher_registration():
+
+    class MultiCheckboxField(SelectMultipleField):
+        widget = widgets.TableWidget()
+        option_widget = widgets.CheckboxInput()
+
+    class RegistrationTeacherForm(FlaskForm):
+        cl = sorted(db.session.query(Class), key=lambda x: (x.parallel, x.groups))
+        classes = [(i.id, str(i.parallel) + "-" + i.groups) for i in cl]
+        parallels = set([i.parallel for i in cl])
+        objects = [i.name for i in db.session.query(Subject)]
+        for i in objects:
+            for j in parallels:
+                print(j)
+                lambda x: int(x[1].splite("-")[0]) == j
+                locals()[i + str(j)] = MultiCheckboxField("",
+                                                          choices=list(filter(lambda x:
+                                                                              int(x[1].splite("-")[0]) == i, classes)),
+                                                          coerce=int)
+
+    form = RegistrationTeacherForm()
+    subjects = list(db.session.query(Subject))
+    classes = list(db.session.query(Class))
+    print(form["ОБЖ"])
+    if form.validate_on_submit():
+        return "чикибамбони"
+    else:
+        return render_template("auth/techer_auth.html", form=form, subjects=subjects)
