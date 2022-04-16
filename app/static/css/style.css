@@ -34,11 +34,14 @@
 .about-image {
     object-fit: cover;
 }
-table {
-   border: 1px solid grey;
+div.mb3{
+   border:0px;
+   border-width: 0px;
+   outline:0px;
 }
-th {
-   border: 1px solid grey;
+
+table.form-control{
+    border:0px;
+    border-width: 0px;
+    outline:0px;
 }
-td {
-   border: 1px solid grey;

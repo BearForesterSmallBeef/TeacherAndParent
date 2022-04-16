@@ -111,24 +111,45 @@ def teacher_registration():
         option_widget = widgets.CheckboxInput()
 
     class RegistrationTeacherForm(FlaskForm):
+        login = StringField('Логин', validators=[InputRequired()])
+        username = StringField('Имя', validators=[InputRequired()])
+        usersurename = StringField('Фамилия', validators=[InputRequired()])
+        usermiddlename = StringField('Отчество', validators=[InputRequired()])
+        password = StringField('Пароль', validators=[InputRequired()])
+
+        # creating tables with subjects
         cl = sorted(db.session.query(Class), key=lambda x: (x.parallel, x.groups))
         classes = [(i.id, str(i.parallel) + "-" + i.groups) for i in cl]
         parallels = set([i.parallel for i in cl])
-        objects = [i.name for i in db.session.query(Subject)]
-        for i in objects:
-            for j in parallels:
-                print(j)
-                lambda x: int(x[1].splite("-")[0]) == j
-                locals()[i + str(j)] = MultiCheckboxField("",
-                                                          choices=list(filter(lambda x:
-                                                                              int(x[1].splite("-")[0]) == i, classes)),
-                                                          coerce=int)
+
+        subjects = [i.name for i in db.session.query(Subject)]
+
+        classes_parallels = {}
+        for j in parallels:
+            classes_parallels[j] = [(i.id, str(i.parallel) + "-" + i.groups)
+                                    for i in db.session.query(Class).filter(Class.parallel == j)]
+
+        for i in classes_parallels.keys():
+            classes_parallels[i].sort(key=lambda x: x[1].split("-")[1:])
+
+        for i in subjects:
+            for j in classes_parallels.keys():
+                print(i + str(j))
+                locals()[i + str(j)] = MultiCheckboxField("", choices=classes_parallels[j], coerce=int)
+        # end of creating
+
+        submit = SubmitField('Создать новую учетную запись учителя')
 
     form = RegistrationTeacherForm()
     subjects = list(db.session.query(Subject))
+    print(subjects)
     classes = list(db.session.query(Class))
-    print(form["ОБЖ"])
+
+    parallels = list(set([i.parallel for i in db.session.query(Class)]))
+    parallels.sort()
+    parallels = list(map(str, parallels))
+    print(parallels)
     if form.validate_on_submit():
         return "чикибамбони"
     else:
-        return render_template("auth/techer_auth.html", form=form, subjects=subjects)
+        return render_template("auth/techer_auth.html", form=form, subjects=subjects, parallels=parallels)
