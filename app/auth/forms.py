@@ -53,11 +53,8 @@ class LoginForm(FlaskForm):
     submit = SubmitField('Войти')
 
 
-#class RegistrationTeacherForm(FlaskForm):
-#    form_dict = dict()
-#    classes = [(i.id, str(i.parallel) + "-" + i.groups) for i in db.session.query(Class)]
-#    objects = [i.name for i in db.session.query(Subject)]
-#    for i in objects:
-#        form_dict[i] = MultiCheckboxField(i,
-#                                          choices=classes,
-#                                              coerce=int)
+class DeleteUser(FlaskForm):
+    login = StringField('Логин удаляемой учетной записи', validators=[InputRequired()])
+    password = PasswordField('Пароль удаляемой учетной записи', validators=[InputRequired()])
+    delete = BooleanField('Я уверен, что хочу удалиить эту запись')
+    submit = SubmitField('Удалить')

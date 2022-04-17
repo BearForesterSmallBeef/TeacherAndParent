@@ -3,13 +3,14 @@ from flask import (Blueprint, redirect, render_template, request, flash, url_for
 from flask_login import login_user, login_required, logout_user, current_user
 
 from app import db
-from app.models import Class, User, Parent, RolesIds, Permissions, Subject
-from .forms import RegisterTypeForm, RegistrationParentForm, LoginForm
+from app.models import Class, User, Parent, RolesIds, Permissions, Subject, TeacherSubjectsClasses, Consultation
+from .forms import RegisterTypeForm, RegistrationParentForm, LoginForm, DeleteUser
 from .utils import permissions_accepted, permissions_required
 
 from flask_wtf import FlaskForm
 from wtforms import StringField, SelectField, SubmitField, PasswordField, BooleanField, SelectMultipleField, widgets
 from wtforms.validators import DataRequired, InputRequired
+from sqlalchemy import null
 
 auth = Blueprint("auth", __name__)
 
@@ -24,6 +25,29 @@ def signup():
         return redirect(url_for(".parent_registration"))
     else:
         abort(403)
+
+
+@auth.route("/delete")
+@permissions_accepted(Permissions.CREATE_PARENTS, Permissions.CREATE_TEACHERS)
+def delete():
+    if (current_user.can(Permissions.CREATE_PARENTS) and
+            current_user.can(Permissions.CREATE_TEACHERS)):
+        return redirect(url_for(".head_choose_delete_type"))
+    elif current_user.can(Permissions.CREATE_PARENTS):
+        return redirect(url_for(".delete_parent"))
+    else:
+        abort(403)
+
+
+@auth.route("/delete/head_choose", methods=["GET", 'POST'])
+@permissions_required(Permissions.CREATE_PARENTS, Permissions.CREATE_TEACHERS)
+def head_choose_delete_type():
+    register_form = RegisterTypeForm()
+    if register_form.validate_on_submit():
+        user_status = register_form.user_status.data
+        return redirect(f"/delete/{user_status}")
+    return render_template("auth/register.html", form=register_form,
+                           header="Удаление. Тип пользователя.")
 
 
 @auth.route("/signup/head_choose", methods=["GET", 'POST'])
@@ -103,7 +127,27 @@ def logout():
     return redirect(url_for('main.index'))
 
 
+def create_teacher(login, password, name, surname, class_dict=dict(), middle_name=""):
+    try:
+        db.session.add(
+            User(login=login, password=password,
+                 name=name,
+                 surname=surname, middle_name=middle_name,
+                 role_id=RolesIds.TEACHER))
+        self_id = db.session.query(User).filter(User.login == login).first().id
+        for i in class_dict.keys():
+            subject_id = db.session.query(Subject).filter(Subject.name == i).first().id
+            for j in class_dict[i]:
+                db.session.add(TeacherSubjectsClasses(teacher_id=self_id, subject_id=subject_id, class_id=int(j)))
+        db.session.commit()
+    except Exception as ex:
+        print(ex)
+        return 0
+    return 1
+
+
 @auth.route('/signup/teacher', methods=['GET', 'POST'])
+@permissions_required(Permissions.CREATE_TEACHERS)
 def teacher_registration():
 
     class MultiCheckboxField(SelectMultipleField):
@@ -134,22 +178,99 @@ def teacher_registration():
 
         for i in subjects:
             for j in classes_parallels.keys():
-                print(i + str(j))
                 locals()[i + str(j)] = MultiCheckboxField("", choices=classes_parallels[j], coerce=int)
         # end of creating
-
         submit = SubmitField('Создать новую учетную запись учителя')
 
     form = RegistrationTeacherForm()
     subjects = list(db.session.query(Subject))
-    print(subjects)
     classes = list(db.session.query(Class))
 
     parallels = list(set([i.parallel for i in db.session.query(Class)]))
     parallels.sort()
     parallels = list(map(str, parallels))
-    print(parallels)
-    if form.validate_on_submit():
-        return "чикибамбони"
+
+    if form.is_submitted() and form.validate():
+        formlist = list(request.form)
+        class_dict = {}
+        for i in subjects:
+            for j in parallels:
+                if (i.name + str(j)) in formlist:
+                    if i.name not in class_dict.keys():
+                        class_dict[i.name] = []
+                    class_dict[i.name] += form.data[i.name + str(j)]
+                    class_dict[i.name] = list(set(class_dict[i.name]))
+        flag = create_teacher(form.data["login"], form.data["password"], form.data["username"],
+                              form.data["usersurename"], middle_name=form.data["usermiddlename"], class_dict=class_dict)
+        if flag:
+            flash("Учетная запись для учителя успешна создана", category="success")
+        else:
+            flash("ПРОИЗОШЕЛ СБОЙ, пожалуйста, повторите попытку позже", category="error")
+        return redirect(f"/signup")
     else:
         return render_template("auth/techer_auth.html", form=form, subjects=subjects, parallels=parallels)
+
+
+def delete_user(login, password, role=-1):
+    try:
+        user = db.session.query(User).filter(User.login == login).first()
+        if not user:
+            return 2
+        if user.role_id != role and role != -1:
+            return 2
+        if not user.verify_password(password):
+            return 2
+        self_id = user.id
+        db.session.delete(user)
+        if role == RolesIds.TEACHER:
+            tcs = db.session.query(TeacherSubjectsClasses).filter(TeacherSubjectsClasses.teacher_id == self_id)
+            cons = db.session.query(Consultation).filter(Consultation.teacher_id == self_id)
+            for i in tcs:
+                db.session.delete(i)
+            for i in cons:
+                db.session.delete(i)
+        if role == RolesIds.PARENT:
+            pars = db.session.query(Parent).filter(Parent.user_id == self_id)
+            for i in pars:
+                db.session.delete(i)
+            cons = db.session.query(Consultation).filter(Consultation.parent_id == self_id)
+            for i in cons:
+                i.parent_id = null()
+                i.is_free = 1
+        db.session.commit()
+    except Exception as ex:
+        print(ex)
+        return 0
+    return 1
+
+
+@auth.route('/delete/teacher', methods=['GET', 'POST'])
+@permissions_required(Permissions.CREATE_TEACHERS)
+def delete_teacher():
+    form = DeleteUser()
+    if form.validate_on_submit() and form.data["delete"]:
+        flag = delete_user(form.data["login"], form.data["password"], role=RolesIds.TEACHER)
+        if flag == 1:
+            flash("Учетная запись учителя успешна удалена", category="success")
+        elif flag == 0:
+            flash("ПРОИЗОШЕЛ СБОЙ, пожалуйста, повторите попытку позже", category="error")
+        elif flag == 2:
+            flash("Некоректный ввод данных", category="error")
+        return redirect(f"/delete")
+    return render_template("auth/auth.html", form=form, header="Удаление учетной записи учителя")
+
+
+@auth.route('/delete/parent', methods=['GET', 'POST'])
+@permissions_required(Permissions.CREATE_PARENTS)
+def delete_parent():
+    form = DeleteUser()
+    if form.validate_on_submit() and form.data["delete"]:
+        flag = delete_user(form.data["login"], form.data["password"], role=RolesIds.PARENT)
+        if flag == 1:
+            flash("Учетная запись родителя успешна удалена", category="success")
+        elif flag == 0:
+            flash("ПРОИЗОШЕЛ СБОЙ, пожалуйста, повторите попытку позже", category="error")
+        elif flag == 2:
+            flash("Некоректный ввод данных", category="error")
+        return redirect(f"/delete")
+    return render_template("auth/auth.html", form=form, header="Удаление учетной записи родителя")

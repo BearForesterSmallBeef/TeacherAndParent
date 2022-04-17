@@ -86,10 +86,10 @@ class Role(db.Model):
 
 
 class RolesIds:
-    ADMIN = 1
-    HEAD_TEACHER = 2
-    TEACHER = 3
-    PARENT = 4
+    ADMIN = 4
+    HEAD_TEACHER = 3
+    TEACHER = 2
+    PARENT = 1
 
 
 class User(db.Model, UserMixin):
@@ -199,6 +199,3 @@ class Consultation(db.Model):
             map(str, [self.id, self.teacher_id, self.parent_id, self.status,
                       self.start_time, self.finish_time]))
 
-# TODO Разделить классы на букву и параллель
-# TODO Формочка для админа
-# TODO разобраться c login`ами и role`ами
