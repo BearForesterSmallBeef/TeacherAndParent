@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from flask import Flask
 from flask_bootstrap import Bootstrap5
 from flask_sqlalchemy import SQLAlchemy
@@ -8,6 +10,7 @@ from flask_marshmallow import Marshmallow
 from flask_apispec import FlaskApiSpec
 from apispec import APISpec
 from apispec.ext.marshmallow import MarshmallowPlugin
+from flask_jwt_extended import JWTManager
 
 
 bootstrap = Bootstrap5()
@@ -35,12 +38,15 @@ spec = APISpec(
     info=dict(description="Api for interaction with TeacherAndParent app"),
     plugins=[MarshmallowPlugin()]
 )
+jwt = JWTManager()
 
 
 def create_app(config_type):
     app = Flask(__name__)
     app.config.from_object(config_type)
     app.config["APISPEC_SPEC"] = spec
+    app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(days=1)
+    app.config["JWT_REFRESH_TOKEN_EXPIRES"] = timedelta(days=30)
 
     bootstrap.init_app(app)
     db.init_app(app)
@@ -48,6 +54,7 @@ def create_app(config_type):
     login_manager.init_app(app)
     ma.init_app(app)
     docs.init_app(app)
+    jwt.init_app(app)
 
     from .main.views import main
     from .auth.views import auth
@@ -55,8 +62,5 @@ def create_app(config_type):
     app.register_blueprint(main)
     app.register_blueprint(auth)
     app.register_blueprint(api_bp)
-
-    from .api.main import register_apis
-    register_apis()
 
     return app

@@ -8,6 +8,7 @@ def handle_error(self, err):
     """It helps preventing writing unnecessary
     try/except block though out the application
     """
+    print(err.with_traceback(err.__traceback__))
     # Handle HTTPExceptions
     if isinstance(err, HTTPException):
         error = {
