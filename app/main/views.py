@@ -2,8 +2,8 @@ from flask import Blueprint, render_template, request, redirect, url_for, Markup
 from flask_login import current_user, login_required
 
 from app import db
-from app.models import User, Parent, Consultation, TeacherSubjectsClasses, Subject, RolesIds
 from app.auth.utils import roles_required
+from app.models import User, Parent, Consultation, TeacherSubjectsClasses, Subject, RolesIds
 
 main = Blueprint("main", __name__)
 
@@ -27,7 +27,7 @@ class ConsultationCard:
     )
 
     def __init__(self, consultation: Consultation):
-        self.is_free = consultation.status
+        self.is_free = consultation.is_free
         self.date = consultation.date.strftime("%d.%m.%Y")
         self.time = consultation.start_time.strftime("%H:%M")
         self.duration = str(consultation.duration // 60) + " мин"
@@ -43,9 +43,11 @@ class ConsultationCardTeacher(ConsultationCard):
     def __init__(self, consultation: Consultation):
         super(ConsultationCardTeacher, self).__init__(consultation)
         self.parent_name = consultation.parent.full_name if consultation.parent is not None else ""
-        self.class_ = db.session.query(Parent).filter_by(
+        parent = db.session.query(Parent).filter_by(
             user_id=consultation.parent_id
-        ).first().class_.name if consultation.parent is not None else ""
+        ).first()
+        class_ = getattr(parent, "class_", None)
+        self.class_ = f"{class_.parallel}-{class_.groups}" if class_ is not None else ""
 
 
 class ConsultationCardParent(ConsultationCard):

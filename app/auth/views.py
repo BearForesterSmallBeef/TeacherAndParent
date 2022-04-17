@@ -1,16 +1,16 @@
 from flask import (Blueprint, redirect, render_template, request, flash, url_for,
                    abort)
 from flask_login import login_user, login_required, logout_user, current_user
+from flask_wtf import FlaskForm
+from sqlalchemy import null
+from wtforms import StringField, SubmitField, SelectMultipleField, widgets
+from wtforms.validators import InputRequired
 
 from app import db
-from app.models import Class, User, Parent, RolesIds, Permissions, Subject, TeacherSubjectsClasses, Consultation
+from app.models import Class, User, Parent, RolesIds, Permissions, Subject, TeacherSubjectsClasses, \
+    Consultation
 from .forms import RegisterTypeForm, RegistrationParentForm, LoginForm, DeleteUser
 from .utils import permissions_accepted, permissions_required
-
-from flask_wtf import FlaskForm
-from wtforms import StringField, SelectField, SubmitField, PasswordField, BooleanField, SelectMultipleField, widgets
-from wtforms.validators import DataRequired, InputRequired
-from sqlalchemy import null
 
 auth = Blueprint("auth", __name__)
 
@@ -71,7 +71,8 @@ def create_parent(login, password, name, surname, classes, middle_name=""):
                  surname=surname, middle_name=middle_name,
                  role_id=RolesIds.PARENT))
         user_id = db.session.query(User).filter(User.login == login).first().id
-        class_id = db.session.query(Class).filter(Class.parallel == parallel and Class.groups == groups).first().id
+        class_id = db.session.query(Class).filter(
+            Class.parallel == parallel and Class.groups == groups).first().id
         db.session.add(
             Parent(user_id=user_id, class_id=class_id))
         db.session.commit()
@@ -85,9 +86,10 @@ def create_parent(login, password, name, surname, classes, middle_name=""):
 @permissions_required(Permissions.CREATE_PARENTS)
 def parent_registration():
     form = RegistrationParentForm()
-    form.classes.choices = sorted([(str(i.parallel) + "-" + i.groups, str(i.parallel) + "-" + i.groups)
-                                   for i in db.session.query(Class)],
-                                  key=lambda x: (int(x[0].split("-")[0]), x[0].split("-")[1]))
+    form.classes.choices = sorted(
+        [(str(i.parallel) + "-" + i.groups, str(i.parallel) + "-" + i.groups)
+         for i in db.session.query(Class)],
+        key=lambda x: (int(x[0].split("-")[0]), x[0].split("-")[1]))
     if form.validate_on_submit():
         flag = create_parent(request.form["login"], request.form["password"],
                              request.form["username"],
@@ -138,7 +140,8 @@ def create_teacher(login, password, name, surname, class_dict=dict(), middle_nam
         for i in class_dict.keys():
             subject_id = db.session.query(Subject).filter(Subject.name == i).first().id
             for j in class_dict[i]:
-                db.session.add(TeacherSubjectsClasses(teacher_id=self_id, subject_id=subject_id, class_id=int(j)))
+                db.session.add(TeacherSubjectsClasses(teacher_id=self_id, subject_id=subject_id,
+                                                      class_id=int(j)))
         db.session.commit()
     except Exception as ex:
         print(ex)
@@ -149,7 +152,6 @@ def create_teacher(login, password, name, surname, class_dict=dict(), middle_nam
 @auth.route('/signup/teacher', methods=['GET', 'POST'])
 @permissions_required(Permissions.CREATE_TEACHERS)
 def teacher_registration():
-
     class MultiCheckboxField(SelectMultipleField):
         widget = widgets.TableWidget()
         option_widget = widgets.CheckboxInput()
@@ -178,7 +180,8 @@ def teacher_registration():
 
         for i in subjects:
             for j in classes_parallels.keys():
-                locals()[i + str(j)] = MultiCheckboxField("", choices=classes_parallels[j], coerce=int)
+                locals()[i + str(j)] = MultiCheckboxField("", choices=classes_parallels[j],
+                                                          coerce=int)
         # end of creating
         submit = SubmitField('Создать новую учетную запись учителя')
 
@@ -201,14 +204,16 @@ def teacher_registration():
                     class_dict[i.name] += form.data[i.name + str(j)]
                     class_dict[i.name] = list(set(class_dict[i.name]))
         flag = create_teacher(form.data["login"], form.data["password"], form.data["username"],
-                              form.data["usersurename"], middle_name=form.data["usermiddlename"], class_dict=class_dict)
+                              form.data["usersurename"], middle_name=form.data["usermiddlename"],
+                              class_dict=class_dict)
         if flag:
             flash("Учетная запись для учителя успешна создана", category="success")
         else:
             flash("ПРОИЗОШЕЛ СБОЙ, пожалуйста, повторите попытку позже", category="error")
         return redirect(f"/signup")
     else:
-        return render_template("auth/techer_auth.html", form=form, subjects=subjects, parallels=parallels)
+        return render_template("auth/techer_auth.html", form=form, subjects=subjects,
+                               parallels=parallels)
 
 
 def delete_user(login, password, role=-1):
@@ -223,7 +228,8 @@ def delete_user(login, password, role=-1):
         self_id = user.id
         db.session.delete(user)
         if role == RolesIds.TEACHER:
-            tcs = db.session.query(TeacherSubjectsClasses).filter(TeacherSubjectsClasses.teacher_id == self_id)
+            tcs = db.session.query(TeacherSubjectsClasses).filter(
+                TeacherSubjectsClasses.teacher_id == self_id)
             cons = db.session.query(Consultation).filter(Consultation.teacher_id == self_id)
             for i in tcs:
                 db.session.delete(i)

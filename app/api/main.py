@@ -40,8 +40,13 @@ class ConsultationResource(MethodResource):
             raise EntityNotFound()
         schema = ConsultationSchema()
         update_kwargs = schema.load(request.get_json())
-        if not all(i in update_kwargs for i in schema.declared_fields):
-            raise ValidationError("Not all fields")
+        update_kwargs["id"] = consultation_id  # user can't edit id of entity
+        missing_fields = {}
+        for i in schema.declared_fields:
+            if i not in update_kwargs:
+                missing_fields[i] = ["field is missing"]
+        if missing_fields:
+            raise ValidationError(missing_fields)
         for key, value in update_kwargs.items():
             setattr(consultation, key, value)  # обновляем поля
         db.session.commit()

@@ -1,19 +1,21 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SelectField, SubmitField, PasswordField, BooleanField, SelectMultipleField, widgets
+from wtforms import StringField, SelectField, SubmitField, PasswordField, BooleanField, \
+    SelectMultipleField, widgets
 from wtforms.validators import DataRequired, InputRequired
 
-#from flask import (Blueprint, redirect, render_template, request, flash, url_for,
+
+# from flask import (Blueprint, redirect, render_template, request, flash, url_for,
 #                   abort)
-#from flask_login import login_user, login_required, logout_user, current_user
+# from flask_login import login_user, login_required, logout_user, current_user
 #
-#from app import db
-#from app.models import Class, User, Parent, RolesIds, Permissions, Subject
-#from .utils import permissions_accepted, permissions_required
+# from app import db
+# from app.models import Class, User, Parent, RolesIds, Permissions, Subject
+# from .utils import permissions_accepted, permissions_required
 
 
 class MultiCheckboxField(SelectMultipleField):
-  widget = widgets.ListWidget(prefix_label=False)
-  option_widget = widgets.CheckboxInput()
+    widget = widgets.ListWidget(prefix_label=False)
+    option_widget = widgets.CheckboxInput()
 
 
 class RegisterTypeForm(FlaskForm):

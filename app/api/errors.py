@@ -4,10 +4,14 @@ from werkzeug.exceptions import HTTPException, NotFound
 from werkzeug.http import HTTP_STATUS_CODES
 
 
-def handle_error(self, err):
+def handle_error(_self, err):
     """It helps preventing writing unnecessary
     try/except block though out the application
     """
+    # UnprocessableEntity suppress ValidationError so restoring
+    if isinstance(getattr(err, "exc"), ValidationError):
+        err = getattr(err, "exc")
+        err.messages = err.messages["json"]
     print(err.with_traceback(err.__traceback__))
     # Handle HTTPExceptions
     if isinstance(err, HTTPException):

@@ -15,8 +15,8 @@ class ConsultationSchema(ma.SQLAlchemyAutoSchema):
 
     @validates_schema
     def not_free_consultation_requires_parent(self, data, **_kwargs):
-        if not data["status"] and "parent_id" not in data:
-            raise ValidationError("Not free consultation requires parent")
+        if not data["is_free"] and "parent_id" not in data:
+            raise ValidationError({"is_free": ["Not free consultation requires parent"]})
 
 
 class LoginSchema(ma.Schema):
