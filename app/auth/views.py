@@ -16,12 +16,12 @@ auth = Blueprint("auth", __name__)
 
 
 @auth.route("/signup")
-@permissions_accepted(Permissions.CREATE_PARENTS, Permissions.CREATE_TEACHERS)
+@permissions_accepted(Permissions.MANAGE_PARENTS, Permissions.MANAGE_TEACHERS)
 def signup():
-    if (current_user.can(Permissions.CREATE_PARENTS) and
-            current_user.can(Permissions.CREATE_TEACHERS)):
+    if (current_user.can(Permissions.MANAGE_PARENTS) and
+            current_user.can(Permissions.MANAGE_TEACHERS)):
         return redirect(url_for(".head_choose_signup_type"))
-    elif current_user.can(Permissions.CREATE_PARENTS):
+    elif current_user.can(Permissions.MANAGE_PARENTS):
         return redirect(url_for(".parent_registration"))
     else:
         abort(403)
@@ -37,19 +37,19 @@ def add():
 
 
 @auth.route("/delete")
-@permissions_accepted(Permissions.CREATE_PARENTS, Permissions.CREATE_TEACHERS)
+@permissions_accepted(Permissions.MANAGE_PARENTS, Permissions.MANAGE_TEACHERS)
 def delete():
-    if (current_user.can(Permissions.CREATE_PARENTS) and
-            current_user.can(Permissions.CREATE_TEACHERS)):
+    if (current_user.can(Permissions.MANAGE_PARENTS) and
+            current_user.can(Permissions.MANAGE_TEACHERS)):
         return redirect(url_for(".head_choose_delete_type"))
-    elif current_user.can(Permissions.CREATE_PARENTS):
+    elif current_user.can(Permissions.MANAGE_PARENTS):
         return redirect(url_for(".delete_parent"))
     else:
         abort(403)
 
 
 @auth.route("/delete/head_choose", methods=["GET", 'POST'])
-@permissions_required(Permissions.CREATE_PARENTS, Permissions.CREATE_TEACHERS)
+@permissions_required(Permissions.MANAGE_PARENTS, Permissions.MANAGE_TEACHERS)
 def head_choose_delete_type():
     register_form = RegisterTypeForm()
     if register_form.validate_on_submit():
@@ -60,7 +60,7 @@ def head_choose_delete_type():
 
 
 @auth.route("/signup/head_choose", methods=["GET", 'POST'])
-@permissions_required(Permissions.CREATE_PARENTS, Permissions.CREATE_TEACHERS)
+@permissions_required(Permissions.MANAGE_PARENTS, Permissions.MANAGE_TEACHERS)
 def head_choose_signup_type():
     register_form = RegisterTypeForm()
     if register_form.validate_on_submit():
@@ -92,7 +92,7 @@ def create_parent(login, password, name, surname, classes, middle_name=""):
 
 
 @auth.route("/signup/parent", methods=['GET', 'POST'])
-@permissions_required(Permissions.CREATE_PARENTS)
+@permissions_required(Permissions.MANAGE_PARENTS)
 def parent_registration():
     form = RegistrationParentForm()
     form.classes.choices = sorted(
@@ -159,7 +159,7 @@ def create_teacher(login, password, name, surname, class_dict=dict(), middle_nam
 
 
 @auth.route('/signup/teacher', methods=['GET', 'POST'])
-@permissions_required(Permissions.CREATE_TEACHERS)
+@permissions_required(Permissions.MANAGE_TEACHERS)
 def teacher_registration():
     class MultiCheckboxField(SelectMultipleField):
         widget = widgets.TableWidget()
@@ -260,7 +260,7 @@ def delete_user(login, password, role=-1):
 
 
 @auth.route('/delete/teacher', methods=['GET', 'POST'])
-@permissions_required(Permissions.CREATE_TEACHERS)
+@permissions_required(Permissions.MANAGE_TEACHERS)
 def delete_teacher():
     form = DeleteUser()
     if form.validate_on_submit() and form.data["delete"]:
@@ -276,7 +276,7 @@ def delete_teacher():
 
 
 @auth.route('/delete/parent', methods=['GET', 'POST'])
-@permissions_required(Permissions.CREATE_PARENTS)
+@permissions_required(Permissions.MANAGE_PARENTS)
 def delete_parent():
     form = DeleteUser()
     if form.validate_on_submit() and form.data["delete"]:

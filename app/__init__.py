@@ -1,26 +1,25 @@
 from datetime import timedelta
 
-from flask import Flask
-from flask_bootstrap import Bootstrap5
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import MetaData
-from flask_migrate import Migrate
-from flask_login import LoginManager
-from flask_marshmallow import Marshmallow
-from flask_apispec import FlaskApiSpec
 from apispec import APISpec
 from apispec.ext.marshmallow import MarshmallowPlugin
+from flask import Flask
+from flask_apispec import FlaskApiSpec
+from flask_bootstrap import Bootstrap5
 from flask_jwt_extended import JWTManager
-
+from flask_login import LoginManager
+from flask_marshmallow import Marshmallow
+from flask_migrate import Migrate
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import MetaData
 
 bootstrap = Bootstrap5()
 metadata = MetaData(
-  naming_convention={
-    'pk': 'pk_%(table_name)s',
-    'fk': 'fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s',
-    'ix': 'ix_%(table_name)s_%(column_0_name)s',
-    'uq': 'uq_%(table_name)s_%(column_0_name)s',
-    'ck': 'ck_%(table_name)s_%(constraint_name)s',
+    naming_convention={
+        'pk': 'pk_%(table_name)s',
+        'fk': 'fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s',
+        'ix': 'ix_%(table_name)s_%(column_0_name)s',
+        'uq': 'uq_%(table_name)s_%(column_0_name)s',
+        'ck': 'ck_%(table_name)s_%(constraint_name)s',
     }
 )
 db = SQLAlchemy(metadata=metadata)
@@ -33,10 +32,10 @@ ma = Marshmallow()
 docs = FlaskApiSpec()
 spec = APISpec(
     title="Consultations",
-    version="0.0.1",
+    version="0.0.4",
     openapi_version="2.0",
     info=dict(description="Api for interaction with TeacherAndParent app"),
-    plugins=[MarshmallowPlugin()]
+    plugins=[MarshmallowPlugin()],
 )
 jwt = JWTManager()
 

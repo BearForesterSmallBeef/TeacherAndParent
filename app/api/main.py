@@ -5,7 +5,7 @@ from flask_restful import Api
 from marshmallow import ValidationError
 
 from app import docs, db
-from .auth import auth_bp
+from .auth import auth_bp, auth_params
 from .errors import EntityNotFound
 from .errors import handle_error
 from .schemas import ConsultationSchema
@@ -22,7 +22,7 @@ api = Api(api_bp, catch_all_404s=True)
 class ConsultationResource(MethodResource):
     decorators = [jwt_required()]
 
-    @doc(summary="get consultation")
+    @doc(summary="get consultation", params=auth_params)
     @marshal_with(ConsultationSchema, code=200)
     def get(self, consultation_id):
         consultation = Consultation.query.get(consultation_id)
@@ -32,7 +32,7 @@ class ConsultationResource(MethodResource):
 
     @doc(summary="edit whole consultation", responses={200: {
         "schema": {'type': 'object', 'properties': {'status': {'type': 'string', 'example': "ok"}}},
-        "description": "success status"}})
+        "description": "success status"}}, params=auth_params)
     @use_kwargs(ConsultationSchema)
     def put(self, consultation_id, **_kwargs):
         consultation = Consultation.query.get(consultation_id)
@@ -54,7 +54,7 @@ class ConsultationResource(MethodResource):
 
     @doc(summary="edit some fields in consultation", responses={200: {
         "schema": {'type': 'object', 'properties': {'status': {'type': 'string', 'example': "ok"}}},
-        "description": "success status"}})
+        "description": "success status"}}, params=auth_params)
     def patch(self, consultation_id):
         consultation = Consultation.query.get(consultation_id)
         if consultation is None:
@@ -67,7 +67,7 @@ class ConsultationResource(MethodResource):
 
     @doc(summary="delete consultation", responses={200: {
         "schema": {'type': 'object', 'properties': {'status': {'type': 'string', 'example': "ok"}}},
-        "description": "success status"}})
+        "description": "success status"}}, params=auth_params)
     def delete(self, consultation_id):
         consultation = Consultation.query.get(consultation_id)
         if consultation is None:
@@ -81,13 +81,13 @@ class ConsultationResource(MethodResource):
 class ConsultationListResource(MethodResource):
     decorators = [jwt_required()]
 
-    @doc(summary="get consultation list")
+    @doc(summary="get consultation list", params=auth_params)
     @marshal_with(ConsultationSchema(many=True), code=200)
     def get(self):
         consultations = Consultation.query.all()
         return consultations
 
-    @doc(summary="add consultation")
+    @doc(summary="add consultation", params=auth_params)
     @use_kwargs(ConsultationSchema)
     @marshal_with(ConsultationSchema, code=200)
     def post(self, **_kwargs):

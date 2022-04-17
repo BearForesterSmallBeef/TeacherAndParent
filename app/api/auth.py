@@ -12,6 +12,20 @@ from ..models import User
 auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
 auth_api = Api(auth_bp)
 
+auth_params = {
+    'Authorization': {
+        'description':
+            'Authorization HTTP header with JWT access token, like:'
+            ' Authorization: Bearer asdf.qwer.zxcv',
+        'in':
+            'header',
+        'type':
+            'string',
+        'required':
+            True
+    }
+}
+
 
 @doc(tags=["auth"])
 class LoginUserResource(MethodResource):
