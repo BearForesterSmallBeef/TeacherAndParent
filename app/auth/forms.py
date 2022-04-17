@@ -23,6 +23,11 @@ class RegisterTypeForm(FlaskForm):
     submit = SubmitField("Далее")
 
 
+class AddTypeForm(FlaskForm):
+    user_status = SelectField("Объект", choices=[("subject", "Предмет"), ("class", "Класс")])
+    submit = SubmitField("Далее")
+
+
 class RegisterParentForm(FlaskForm):
     full_name = StringField("ФИО", validators=[DataRequired()])
     school = StringField("Школа", validators=[DataRequired()])
@@ -58,5 +63,18 @@ class LoginForm(FlaskForm):
 class DeleteUser(FlaskForm):
     login = StringField('Логин удаляемой учетной записи', validators=[InputRequired()])
     password = PasswordField('Пароль удаляемой учетной записи', validators=[InputRequired()])
-    delete = BooleanField('Я уверен, что хочу удалиить эту запись')
+    delete = BooleanField('Я уверен, что хочу удалить эту запись')
     submit = SubmitField('Удалить')
+
+
+class AddSubject(FlaskForm):
+    name = StringField('Название', validators=[InputRequired()])
+    about = StringField('Описание', validators=[InputRequired()], default="Это новый предмет!")
+    submit = SubmitField('Добавить')
+
+
+class AddClass(FlaskForm):
+    parallel = SelectField("Параллель", choices=[(i, i) for i in range(1, 12)])
+    groups = StringField('Группы', validators=[InputRequired()])
+    about = StringField('Описание', validators=[InputRequired()], default="Это новый класс!")
+    submit = SubmitField('Добавить')

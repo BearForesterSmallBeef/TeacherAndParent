@@ -9,7 +9,7 @@ from wtforms.validators import InputRequired
 from app import db
 from app.models import Class, User, Parent, RolesIds, Permissions, Subject, TeacherSubjectsClasses, \
     Consultation
-from .forms import RegisterTypeForm, RegistrationParentForm, LoginForm, DeleteUser
+from .forms import RegisterTypeForm, RegistrationParentForm, LoginForm, DeleteUser, AddSubject, AddClass, AddTypeForm
 from .utils import permissions_accepted, permissions_required
 
 auth = Blueprint("auth", __name__)
@@ -23,6 +23,15 @@ def signup():
         return redirect(url_for(".head_choose_signup_type"))
     elif current_user.can(Permissions.CREATE_PARENTS):
         return redirect(url_for(".parent_registration"))
+    else:
+        abort(403)
+
+
+@auth.route("/add")
+@permissions_accepted(Permissions.CREATE_TEACHERS)
+def add():
+    if current_user.can(Permissions.CREATE_TEACHERS):
+        return redirect(url_for(".head_choose_add_type"))
     else:
         abort(403)
 
@@ -280,3 +289,68 @@ def delete_parent():
             flash("Некоректный ввод данных", category="error")
         return redirect(f"/delete")
     return render_template("auth/auth.html", form=form, header="Удаление учетной записи родителя")
+
+
+@auth.route("/add/head_choose", methods=["GET", 'POST'])
+@permissions_required(Permissions.CREATE_TEACHERS)
+def head_choose_add_type():
+    register_form = AddTypeForm()
+    if register_form.validate_on_submit():
+        adding = register_form.user_status.data
+        return redirect(f"/add/{adding}")
+    return render_template("auth/register.html", form=register_form,
+                           header="Добавление. Тип объекта.")
+
+
+def create_subject(name, about):
+    try:
+        db.session.add(
+            Subject(name=name, about=about)
+        )
+        db.session.commit()
+    except Exception as ex:
+        print(ex)
+        return 0
+    return 1
+
+
+@auth.route('/add/subject', methods=['GET', 'POST'])
+@permissions_required(Permissions.CREATE_TEACHERS)
+def add_subject():
+    form = AddSubject()
+    if form.validate_on_submit():
+        flag = create_subject(form.data["name"], form.data["about"])
+        if flag == 1:
+            flash("Предмет успешно создан", category="success")
+        elif flag == 0:
+            flash("ПРОИЗОШЕЛ СБОЙ, пожалуйста, повторите попытку позже", category="error")
+        return redirect(f"/add")
+    else:
+        return render_template("auth/auth.html", form=form, header="Добавление предмета")
+
+
+def create_class(about, parallel, groups):
+    try:
+        db.session.add(
+            Class(about=about, parallel=int(parallel), groups=groups)
+        )
+        db.session.commit()
+    except Exception as ex:
+        print(ex)
+        return 0
+    return 1
+
+
+@auth.route('/add/class', methods=['GET', 'POST'])
+@permissions_required(Permissions.CREATE_TEACHERS)
+def add_class():
+    form = AddClass()
+    if form.validate_on_submit():
+        flag = create_class(form.data["about"], form.data["parallel"], form.data["groups"])
+        if flag == 1:
+            flash("Класс успешно создан", category="success")
+        elif flag == 0:
+            flash("ПРОИЗОШЕЛ СБОЙ, пожалуйста, повторите попытку позже", category="error")
+        return redirect(f"/add")
+    else:
+        return render_template("auth/auth.html", form=form, header="Добавление класса")
