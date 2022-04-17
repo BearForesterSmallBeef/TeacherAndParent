@@ -20,6 +20,7 @@ def change_navbar():
         g.nav_items = [("main.get_subjects", "Предметы"), ("main.get_teachers", "Учителя")]
     g.nav_items.append(("flask-apispec.swagger-ui", "API"))
 
+
 class ConsultationCard:
     fields_labels = (
         ("date", "Дата"),
