@@ -1,16 +1,39 @@
-    <div class="card">
-        <dl class="list-group list-group-flush">
-            {% for field, label in fields_labels %}
-                <div class="list-group-item {{ 'list-group-item-primary' if card_data.is_free else 'list-group-item-secondary' }}">
-                    <div class="row">
-                        <dt class="col text-start">
-                            {{ label }}
-                        </dt>
-                        <dd class="col text-end">
-                            {{ card_data | attr(field) }}
-                        </dd>
-                    </div>
-                </div>
-            {% endfor %}
-        </dl>
+<div class="card">
+    <dl class="list-group list-group-flush">
+        {% set color = 'primary' if card_data.is_free else 'secondary' %}
+        {% for field, label in fields_labels %}
+        <div class="list-group-item list-group-item-{{ color }} ">
+            <div class="row">
+                <dt class="col text-start">
+                    {{ label }}
+                </dt>
+                <dd class="col text-end">
+                    {{ card_data | attr(field) }}
+                </dd>
+            </div>
+        </div>
+        {% endfor %}
+        <div class="list-group-item list-group-item-{{ color }}">
+            {% if card_data.parent_id != current_user.id %}
+            <div class="row">
+                <form action="{{ url_for('main.schedule_consultation',
+                     consultation_id=card_data.consultation_id) }}" method="post">
+                    <button class="btn btn-{{ color }}
+                         {{ '' if card_data.is_free else '' }}
+                          form-control" data-bs-toggle="modal" data-bs-target="#exampleModal">Записаться
+                    </button>
+                </form>
+            </div>
+            {% else %}
+            <div class="row">
+                <form action="{{ url_for('main.cancel_consultation',
+                     consultation_id=card_data.consultation_id) }}" method="post">
+                    <button class="btn btn-danger
+                          form-control" data-bs-toggle="modal" data-bs-target="#exampleModal">Отменить запись
+                    </button>
+                </form>
+            </div>
+            {% endif %}
+        </div>
+    </dl>
 </div>

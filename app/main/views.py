@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, Markup, g
+from flask import Blueprint, render_template, request, redirect, url_for, Markup, g, flash
 from flask_login import current_user, login_required
 
 from app import db
@@ -30,6 +30,8 @@ class ConsultationCard:
     )
 
     def __init__(self, consultation: Consultation):
+        self.consultation_id = consultation.id
+        self.parent_id = consultation.parent_id
         self.is_free = consultation.is_free
         self.date = consultation.date.strftime("%d.%m.%Y")
         self.time = consultation.start_time.strftime("%H:%M")
@@ -114,6 +116,43 @@ def get_consultations():
         return redirect(url_for(".parent_consultations"))
     else:
         return redirect(url_for(".index"))
+
+
+@main.route("/schedule/<int:consultation_id>", methods=["POST"])
+@roles_required("parent")
+def schedule_consultation(consultation_id):
+    consultation = Consultation.query.get(consultation_id)
+    if consultation is None:  # если вручную перешли по адресу
+        flash("Такой консультации не существует", category="error")
+        return redirect(url_for(".get_consultations"), 303)
+    elif not consultation.is_free:
+        flash("Консультация уже знанята", category="error")
+        return redirect(url_for(".get_consultations"), 303)
+    consultation.parent_id = current_user.id
+    consultation.is_free = False
+    db.session.commit()
+    flash("Вы успешно записались на консультацию", category="success")
+    return redirect(url_for(".get_consultations"), 303)
+
+
+@main.route("/cancel/<int:consultation_id>", methods=["POST"])
+@roles_required("parent")
+def cancel_consultation(consultation_id):
+    consultation = Consultation.query.get(consultation_id)
+    if consultation is None:  # если вручную перешли по адресу
+        flash("Такой консультации не существует", category="error")
+        return redirect(url_for(".get_consultations"), 303)
+    elif consultation.is_free:
+        flash("Нельзя отписаться от незанетой консультации", category="error")
+        return redirect(url_for(".get_consultations"), 303)
+    elif consultation.parent_id != current_user.id:
+        flash("Вы не записывались на эту консультацию", category="error")
+        return redirect(url_for(".get_consultations"), 303)
+    consultation.parent_id = None
+    consultation.is_free = True
+    db.session.commit()
+    flash("Вы успешно отпилась от консультацию", category="success")
+    return redirect(url_for(".get_consultations"), 303)
 
 
 @main.route("/about")

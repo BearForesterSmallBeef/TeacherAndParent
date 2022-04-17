@@ -57,7 +57,7 @@ class Role(db.Model):
             'head_teacher': [Permissions.EDIT_CONSULTATIONS, Permissions.MANAGE_PARENTS,
                              Permissions.MANAGE_TEACHERS],
             'admin': [Permissions.EDIT_CONSULTATIONS, Permissions.MANAGE_PARENTS,
-                      Permissions.MANAGE_TEACHERS, Permissions.CREATE_HEAD_TEACHER],
+                      Permissions.MANAGE_TEACHERS, Permissions.MANAGE_HEAD_TEACHER],
         }
         for r in roles:
             role = Role.query.filter_by(name=r).first()
