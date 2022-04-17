@@ -3,20 +3,22 @@ from flask_login import current_user, login_required
 
 from app import db
 from app.auth.utils import roles_required
-from app.models import User, Parent, Consultation, TeacherSubjectsClasses, Subject, RolesIds
+from app.models import (User, Parent, Consultation, TeacherSubjectsClasses, Subject, RolesIds,
+                        Permissions)
 
 main = Blueprint("main", __name__)
 
 
-@main.before_request
+@main.before_app_request
 def change_navbar():
     if not current_user.is_authenticated:
         return
-    if current_user.role_id == RolesIds.TEACHER:
+    if current_user.can(Permissions.MANAGE_PARENTS):  # кто ХОТЯ БЫ может создать пользоваетлей
         g.nav_items = [("auth.signup", "Регистрация")]
+        g.nav_items = [("auth.delete", "Удаление")]
     elif current_user.role_id == RolesIds.PARENT:
         g.nav_items = [("main.get_subjects", "Предметы"), ("main.get_teachers", "Учителя")]
-
+    g.nav_items.append(("flask-apispec.swagger-ui", "API"))
 
 class ConsultationCard:
     fields_labels = (

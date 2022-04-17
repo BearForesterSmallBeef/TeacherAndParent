@@ -58,5 +58,5 @@ class LoginForm(FlaskForm):
 class DeleteUser(FlaskForm):
     login = StringField('Логин удаляемой учетной записи', validators=[InputRequired()])
     password = PasswordField('Пароль удаляемой учетной записи', validators=[InputRequired()])
-    delete = BooleanField('Я уверен, что хочу удалиить эту запись')
+    delete = BooleanField('Я уверен, что хочу удалить эту запись')
     submit = SubmitField('Удалить')
