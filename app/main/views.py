@@ -13,11 +13,13 @@ main = Blueprint("main", __name__)
 def change_navbar():
     if not current_user.is_authenticated:
         return
+    g.nav_items = []
+    if current_user.can(Permissions.MANAGE_OBJECTS):
+        g.nav_items.extend([("auth.add", "Добавление"), ])
     if current_user.can(Permissions.MANAGE_PARENTS):  # кто ХОТЯ БЫ может создать пользоваетлей
-        g.nav_items = [("auth.signup", "Регистрация")]
-        g.nav_items = [("auth.delete", "Удаление")]
-    elif current_user.role_id == RolesIds.PARENT:
-        g.nav_items = [("main.get_subjects", "Предметы"), ("main.get_teachers", "Учителя")]
+        g.nav_items.extend([("auth.signup", "Регистрация"), ("auth.delete", "Удаление")])
+    if current_user.role_id == RolesIds.PARENT:
+        g.nav_items.extend([("main.get_subjects", "Предметы"), ("main.get_teachers", "Учителя")])
     g.nav_items.append(("flask-apispec.swagger-ui", "API"))
 
 

@@ -35,8 +35,8 @@ class Class(db.Model):
 class Permissions:
     MAKE_APPOINTMENT = 1
     EDIT_CONSULTATIONS = 2
-    CREATE_PARENTS = 4
-    CREATE_TEACHERS = 8
+    MANAGE_PARENTS = 4
+    MANAGE_TEACHERS = 8
     CREATE_HEAD_TEACHER = 16
     MANAGE_OBJECTS = 32
 
@@ -54,11 +54,11 @@ class Role(db.Model):
     def insert_roles():
         roles = {
             'parent': [Permissions.MAKE_APPOINTMENT],
-            'teacher': [Permissions.EDIT_CONSULTATIONS, Permissions.CREATE_PARENTS, Permissions.MANAGE_OBJECTS],
-            'head_teacher': [Permissions.EDIT_CONSULTATIONS, Permissions.CREATE_PARENTS,
-                             Permissions.CREATE_TEACHERS, Permissions.MANAGE_OBJECTS],
-            'admin': [Permissions.EDIT_CONSULTATIONS, Permissions.CREATE_PARENTS,
-                      Permissions.CREATE_TEACHERS, Permissions.CREATE_HEAD_TEACHER, Permissions.MANAGE_OBJECTS],
+            'teacher': [Permissions.EDIT_CONSULTATIONS, Permissions.MANAGE_PARENTS, Permissions.MANAGE_OBJECTS],
+            'head_teacher': [Permissions.EDIT_CONSULTATIONS, Permissions.MANAGE_PARENTS,
+                             Permissions.MANAGE_TEACHERS, Permissions.MANAGE_OBJECTS],
+            'admin': [Permissions.EDIT_CONSULTATIONS, Permissions.MANAGE_PARENTS,
+                      Permissions.MANAGE_TEACHERS, Permissions.CREATE_HEAD_TEACHER, Permissions.MANAGE_OBJECTS],
         }
         for r in roles:
             role = Role.query.filter_by(name=r).first()

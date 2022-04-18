@@ -28,9 +28,9 @@ def signup():
 
 
 @auth.route("/add")
-@permissions_accepted(Permissions.CREATE_TEACHERS)
+@permissions_accepted(Permissions.MANAGE_OBJECTS)
 def add():
-    if current_user.can(Permissions.CREATE_TEACHERS):
+    if current_user.can(Permissions.MANAGE_TEACHERS):
         return redirect(url_for(".head_choose_add_type"))
     else:
         abort(403)
@@ -292,7 +292,7 @@ def delete_parent():
 
 
 @auth.route("/add/head_choose", methods=["GET", 'POST'])
-@permissions_required(Permissions.CREATE_TEACHERS)
+@permissions_required(Permissions.MANAGE_OBJECTS)
 def head_choose_add_type():
     register_form = AddTypeForm()
     if register_form.validate_on_submit():
@@ -315,7 +315,7 @@ def create_subject(name, about):
 
 
 @auth.route('/add/subject', methods=['GET', 'POST'])
-@permissions_required(Permissions.CREATE_TEACHERS)
+@permissions_required(Permissions.MANAGE_OBJECTS)
 def add_subject():
     form = AddSubject()
     if form.validate_on_submit():
@@ -342,7 +342,7 @@ def create_class(about, parallel, groups):
 
 
 @auth.route('/add/class', methods=['GET', 'POST'])
-@permissions_required(Permissions.CREATE_TEACHERS)
+@permissions_required(Permissions.MANAGE_OBJECTS)
 def add_class():
     form = AddClass()
     if form.validate_on_submit():
