@@ -13,13 +13,14 @@
             </div>
         </div>
         {% endfor %}
+        {% if card_data.teacher_name is defined %}
         <div class="list-group-item list-group-item-{{ color }}">
             {% if card_data.parent_id != current_user.id %}
             <div class="row">
                 <form action="{{ url_for('main.schedule_consultation',
                      consultation_id=card_data.consultation_id) }}" method="post">
                     <button class="btn btn-{{ color }}
-                         {{ '' if card_data.is_free else '' }}
+                         {{ '' if card_data.is_free else 'disabled' }}
                           form-control" data-bs-toggle="modal" data-bs-target="#exampleModal">Записаться
                     </button>
                 </form>
@@ -35,5 +36,6 @@
             </div>
             {% endif %}
         </div>
+        {% endif %}
     </dl>
 </div>

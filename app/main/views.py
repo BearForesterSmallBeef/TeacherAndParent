@@ -117,6 +117,7 @@ def get_consultations():
     elif current_user.role_id == RolesIds.PARENT:
         return redirect(url_for(".parent_consultations"))
     else:
+        flash("Вы не имеете доступ к консультациям. Выберите пункт в меню.", category="error")
         return redirect(url_for(".index"))
 
 
