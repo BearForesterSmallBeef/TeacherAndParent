@@ -20,6 +20,12 @@ def change_navbar():
         g.nav_items.extend([("auth.signup", "Регистрация"), ("auth.delete", "Удаление")])
     if current_user.role_id == RolesIds.PARENT:
         g.nav_items.extend([("main.get_subjects", "Предметы"), ("main.get_teachers", "Учителя")])
+    role_label_mapping = {"parent": "Родитель",
+                          "teacher": "Учитель",
+                          "head_teacher": "Зауч",
+                          "admin": "Админ", }
+    g.nav_user_role = role_label_mapping.get(current_user.role.name)
+    print(g.nav_user_role)
     g.nav_items.append(("flask-apispec.swagger-ui", "API"))
 
 
