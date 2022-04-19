@@ -19,7 +19,7 @@ class MultiCheckboxField(SelectMultipleField):
 
 
 class RegisterTypeForm(FlaskForm):
-    user_status = SelectField("Статус", choices=[("parent", "Родитель"), ("teacher", "Учитель")])
+    user_status = SelectField("Статус", choices=[])
     submit = SubmitField("Далее")
 
 
@@ -51,6 +51,15 @@ class RegistrationParentForm(FlaskForm):
     password = StringField('Пароль', validators=[InputRequired()])
     classes = SelectField("Класс", validate_choice=False)
     submit = SubmitField('Создать новую учетную запись родителя')
+
+
+class RegistrationHeadTeacherForm(FlaskForm):
+    login = StringField('Логин', validators=[InputRequired()])
+    username = StringField('Имя', validators=[InputRequired()])
+    usersurename = StringField('Фамилия', validators=[InputRequired()])
+    usermiddlename = StringField('Отчество', validators=[InputRequired()])
+    password = StringField('Пароль', validators=[InputRequired()])
+    submit = SubmitField('Создать')
 
 
 class LoginForm(FlaskForm):

@@ -1,5 +1,4 @@
-from flask import (Blueprint, redirect, render_template, request, flash, url_for,
-                   abort)
+from flask import (Blueprint, redirect, render_template, request, flash, url_for)
 from flask_login import login_user, login_required, logout_user, current_user
 from flask_wtf import FlaskForm
 from sqlalchemy import null
@@ -8,50 +7,66 @@ from wtforms.validators import InputRequired
 
 from app import db
 from app.models import Class, User, Parent, RolesIds, Permissions, Subject, TeacherSubjectsClasses, \
-    Consultation
-from .forms import RegisterTypeForm, RegistrationParentForm, LoginForm, DeleteUser, AddSubject, AddClass, AddTypeForm
+    Consultation, Role
+from .forms import RegisterTypeForm, RegistrationParentForm, LoginForm, DeleteUser, AddSubject, \
+    AddClass, AddTypeForm, RegistrationHeadTeacherForm
 from .utils import permissions_accepted, permissions_required
 
 auth = Blueprint("auth", __name__)
 
 
+def get_registration_type_form():
+    register_form = RegisterTypeForm()
+    user_statuses = []
+    if current_user.can(Permissions.MANAGE_PARENTS):
+        user_status = Role.query.get(RolesIds.PARENT).name
+        user_status = (user_status, "Родитель")
+        user_statuses.append(user_status)
+    if current_user.can(Permissions.MANAGE_TEACHERS):
+        user_status = Role.query.get(RolesIds.TEACHER).name
+        user_status = (user_status, "Учитель")
+        user_statuses.append(user_status)
+    if current_user.can(Permissions.MANAGE_HEAD_TEACHER):
+        user_status = Role.query.get(RolesIds.HEAD_TEACHER).name
+        user_status = (user_status, "Зауч")
+        user_statuses.append(user_status)
+    register_form.user_status.choices = user_statuses
+    return register_form
+
+
 @auth.route("/signup")
-@permissions_accepted(Permissions.MANAGE_PARENTS, Permissions.MANAGE_TEACHERS)
+@permissions_accepted(Permissions.MANAGE_PARENTS,
+                      Permissions.MANAGE_TEACHERS,
+                      Permissions.MANAGE_HEAD_TEACHER)
 def signup():
-    if (current_user.can(Permissions.MANAGE_PARENTS) and
-            current_user.can(Permissions.MANAGE_TEACHERS)):
-        return redirect(url_for(".head_choose_signup_type"))
-    elif current_user.can(Permissions.MANAGE_PARENTS):
-        return redirect(url_for(".parent_registration"))
-    else:
-        abort(403)
+    return redirect(url_for(".choose_signup_type"))
 
 
 @auth.route("/add")
 @permissions_accepted(Permissions.MANAGE_OBJECTS)
 def add():
-    if current_user.can(Permissions.MANAGE_TEACHERS):
-        return redirect(url_for(".head_choose_add_type"))
-    else:
-        abort(403)
+    return redirect(url_for(".choose_add_type"))
 
 
 @auth.route("/delete")
-@permissions_accepted(Permissions.MANAGE_PARENTS, Permissions.MANAGE_TEACHERS)
+@permissions_accepted(Permissions.MANAGE_PARENTS,
+                      Permissions.MANAGE_TEACHERS,
+                      Permissions.MANAGE_HEAD_TEACHER)
 def delete():
-    if (current_user.can(Permissions.MANAGE_PARENTS) and
-            current_user.can(Permissions.MANAGE_TEACHERS)):
-        return redirect(url_for(".head_choose_delete_type"))
-    elif current_user.can(Permissions.MANAGE_PARENTS):
-        return redirect(url_for(".delete_parent"))
-    else:
-        abort(403)
+    return redirect(url_for(".choose_delete_type"))
 
 
-@auth.route("/delete/head_choose", methods=["GET", 'POST'])
-@permissions_required(Permissions.MANAGE_PARENTS, Permissions.MANAGE_TEACHERS)
-def head_choose_delete_type():
-    register_form = RegisterTypeForm()
+@auth.route("/delete/choose", methods=["GET", 'POST'])
+@permissions_accepted(Permissions.MANAGE_PARENTS,
+                      Permissions.MANAGE_TEACHERS,
+                      Permissions.MANAGE_HEAD_TEACHER)
+def choose_delete_type():
+    register_form = get_registration_type_form()
+    user_statuses = register_form.user_status.choices
+    if len(user_statuses) == 1:  # если может создавать только одного типа пользователя,
+        # то сразу перенаправляем на нужную страницу
+        user_status_slug = user_statuses[0][0]
+        return redirect(f"/delete/{user_status_slug}")
     if register_form.validate_on_submit():
         user_status = register_form.user_status.data
         return redirect(f"/delete/{user_status}")
@@ -59,10 +74,17 @@ def head_choose_delete_type():
                            header="Удаление. Тип пользователя.")
 
 
-@auth.route("/signup/head_choose", methods=["GET", 'POST'])
-@permissions_required(Permissions.MANAGE_PARENTS, Permissions.MANAGE_TEACHERS)
-def head_choose_signup_type():
-    register_form = RegisterTypeForm()
+@auth.route("/signup/choose", methods=["GET", 'POST'])
+@permissions_accepted(Permissions.MANAGE_PARENTS,
+                      Permissions.MANAGE_TEACHERS,
+                      Permissions.MANAGE_HEAD_TEACHER)
+def choose_signup_type():
+    register_form = get_registration_type_form()
+    user_statuses = register_form.user_status.choices
+    if len(user_statuses) == 1:  # если может создавать только одного типа пользователя,
+        # то сразу перенаправляем на нужную страницу
+        user_status_slug = user_statuses[0][0]
+        return redirect(f"/signup/{user_status_slug}")
     if register_form.validate_on_submit():
         user_status = register_form.user_status.data
         return redirect(f"/signup/{user_status}")
@@ -138,7 +160,9 @@ def logout():
     return redirect(url_for('main.index'))
 
 
-def create_teacher(login, password, name, surname, class_dict=dict(), middle_name=""):
+def create_teacher(login, password, name, surname, class_dict=None, middle_name=""):
+    if class_dict is None:
+        class_dict = {}
     try:
         db.session.add(
             User(login=login, password=password,
@@ -225,6 +249,33 @@ def teacher_registration():
                                parallels=parallels)
 
 
+@auth.route("/signup/head_teacher", methods=['GET', 'POST'])
+@permissions_required(Permissions.MANAGE_HEAD_TEACHER)
+def head_teacher_registration():
+    form = RegistrationHeadTeacherForm()
+    if form.validate_on_submit():
+        try:
+            head_teacher = User(login=form.login.data,
+                                password=form.password.data,
+                                name=form.username.data,
+                                surname=form.usersurename.data,
+                                middle_name=form.usermiddlename.data,
+                                role_id=RolesIds.HEAD_TEACHER)
+        except Exception as e:
+            flag = 0
+            print(e)
+        else:
+            flag = 1
+            db.session.add(head_teacher)
+            db.session.commit()
+        if flag:
+            flash("Учетная запись для зауча успешна создана", category="success")
+        else:
+            flash("ПРОИЗОШЕЛ СБОЙ, пожалуйста, повторите попытку позже", category="error")
+        return redirect(f"/signup")
+    return render_template("auth/auth.html", form=form, header="Создание учетной записи зауча")
+
+
 def delete_user(login, password, role=-1):
     try:
         user = db.session.query(User).filter(User.login == login).first()
@@ -291,9 +342,25 @@ def delete_parent():
     return render_template("auth/auth.html", form=form, header="Удаление учетной записи родителя")
 
 
-@auth.route("/add/head_choose", methods=["GET", 'POST'])
+@auth.route('/delete/head_teacher', methods=['GET', 'POST'])
+@permissions_required(Permissions.MANAGE_PARENTS)
+def delete_head_teacher():
+    form = DeleteUser()
+    if form.validate_on_submit() and form.data["delete"]:
+        flag = delete_user(form.data["login"], form.data["password"], role=RolesIds.PARENT)
+        if flag == 1:
+            flash("Учетная запись зауча успешна удалена", category="success")
+        elif flag == 0:
+            flash("ПРОИЗОШЕЛ СБОЙ, пожалуйста, повторите попытку позже", category="error")
+        elif flag == 2:
+            flash("Некоректный ввод данных", category="error")
+        return redirect(f"/delete")
+    return render_template("auth/auth.html", form=form, header="Удаление учетной записи зауча")
+
+
+@auth.route("/add/choose", methods=["GET", 'POST'])
 @permissions_required(Permissions.MANAGE_OBJECTS)
-def head_choose_add_type():
+def choose_add_type():
     register_form = AddTypeForm()
     if register_form.validate_on_submit():
         adding = register_form.user_status.data
