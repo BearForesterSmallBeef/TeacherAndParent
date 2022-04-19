@@ -1,8 +1,9 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, SelectField, SubmitField, PasswordField, BooleanField, \
-    SelectMultipleField, widgets
-from wtforms.validators import DataRequired, InputRequired
+    SelectMultipleField, widgets, DateField, DateTimeField
+from wtforms.validators import DataRequired, InputRequired, URL, ValidationError
 
+from app.models import User
 
 # from flask import (Blueprint, redirect, render_template, request, flash, url_for,
 #                   abort)
@@ -86,4 +87,30 @@ class AddClass(FlaskForm):
     parallel = SelectField("Параллель", choices=[(i, i) for i in range(1, 12)])
     groups = StringField('Группы', validators=[InputRequired()])
     about = StringField('Описание', validators=[InputRequired()], default="Это новый класс!")
+    submit = SubmitField('Добавить')
+
+
+class ManageConsultationForm(FlaskForm):
+    parent_login = StringField('Логин родителя')
+
+    def validate_parent_login(self, field):
+        exists = User.query.filter_by(login=field.data).first() is not None
+        if not exists:
+            raise ValidationError("Такого пользователя не существует")
+        if self.is_free.data:
+            raise ValidationError("Если указан родитель, то консультация должна быть занянта")
+
+    date = DateField("Дата", validators=[InputRequired()])
+    start_time = DateTimeField("Начало", validators=[InputRequired()], format="%H:%M",
+                               render_kw={"placeholder": "13:10"})
+    duration = SelectField("Продолжительность", validators=[InputRequired()],
+                           choices=range(5, 61, 5))
+    is_free = BooleanField("Свободна ли")
+
+    def validate_is_free(self, field):
+        if field.data and not self.parent_login.data:
+            raise ValidationError("Если консультация не свободна, то укажите родителя")
+
+    url = StringField("Ссылка", validators=[URL()])
+
     submit = SubmitField('Добавить')

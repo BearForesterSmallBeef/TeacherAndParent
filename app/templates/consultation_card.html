@@ -36,6 +36,12 @@
             </div>
             {% endif %}
         </div>
+        {% else %}
+        <div class="row">
+<a role="button" class="btn btn-{{ color }}
+                         {{ '' if card_data.is_free else 'disabled' }}
+                          form-control" href="/teacher/consultations/edit/{{ card_data.consultation_id }}">Изменить</a>
+            </div>
         {% endif %}
     </dl>
 </div>

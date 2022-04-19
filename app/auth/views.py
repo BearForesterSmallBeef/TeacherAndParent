@@ -1,3 +1,5 @@
+import datetime
+
 from flask import (Blueprint, redirect, render_template, request, flash, url_for)
 from flask_login import login_user, login_required, logout_user, current_user
 from flask_wtf import FlaskForm
@@ -9,7 +11,7 @@ from app import db
 from app.models import Class, User, Parent, RolesIds, Permissions, Subject, TeacherSubjectsClasses, \
     Consultation, Role
 from .forms import RegisterTypeForm, RegistrationParentForm, LoginForm, DeleteUser, AddSubject, \
-    AddClass, AddTypeForm, RegistrationHeadTeacherForm
+    AddClass, AddTypeForm, RegistrationHeadTeacherForm, ManageConsultationForm
 from .utils import permissions_accepted, permissions_required
 
 auth = Blueprint("auth", __name__)
@@ -421,3 +423,58 @@ def add_class():
         return redirect(f"/add")
     else:
         return render_template("auth/auth.html", form=form, header="Добавление класса")
+
+
+@auth.route("/teacher/consultations/create", methods=["GET", "POST"])
+@permissions_required(Permissions.MANAGE_CONSULTATIONS)
+def create_consultation():
+    form = ManageConsultationForm()
+    if form.validate_on_submit():
+        parent = User.query.filter_by(login=form.parent_login.data).first()
+        start_time = form.start_time.data
+        duration = int(form.duration.data)
+        finish_time = (start_time + datetime.timedelta(minutes=duration)).time()
+        consultation = Consultation(teacher_id=current_user.id, parent_id=getattr(parent, "id"),
+                                    date=form.date.data, start_time=start_time.time(),
+                                    finish_time=finish_time, is_free=form.is_free.data,
+                                    url=form.url.data)
+        db.session.add(consultation)
+        db.session.commit()
+        return redirect(url_for("main.teacher_consultations"))
+    return render_template("teacher/manage_consultation.html", form=form,
+                           header="Создать консультацию")
+
+
+@auth.route("/teacher/consultations/edit/<int:consultation_id>", methods=["GET", "POST"])
+@permissions_required(Permissions.MANAGE_CONSULTATIONS)
+def edit_consultation(consultation_id):
+    form = ManageConsultationForm()
+    consultation = Consultation.query.get(consultation_id)
+    if consultation is None:
+        flash("Консультация не найдена", category="error")
+        return redirect(url_for("main.teacher_consultations"))
+    form.parent_login.data = consultation.parent.login if consultation.parent else ""
+    form.date.data = consultation.date
+    form.start_time.data = datetime.datetime(1900, 1, 1, consultation.start_time.hour,
+                                             consultation.start_time.minute)
+    form.duration.date = str((datetime.datetime(1900, 1, 1, consultation.finish_time.hour,
+                                                consultation.finish_time.minute) - datetime.datetime(
+        1900, 1, 1, consultation.start_time.hour,
+        consultation.start_time.minute)).min)
+    form.is_free.data = consultation.is_free
+    form.url.data = consultation.url
+    if form.validate_on_submit():
+        parent = User.query.filter_by(login=form.parent_login.data).first()
+        start_time = form.start_time.data
+        duration = int(form.duration.data)
+        finish_time = (start_time + datetime.timedelta(minutes=duration)).time()
+        consultation.parent_id = getattr(parent, "id")
+        consultation.date = form.date.data
+        consultation.start_time = start_time.time()
+        consultation.finish_time = finish_time
+        consultation.is_free = form.is_free.data
+        consultation.url = form.url.data
+        db.session.commit()
+        return redirect(url_for("main.teacher_consultations"))
+    return render_template("teacher/manage_consultation.html", form=form,
+                           header="Создать консультацию")
