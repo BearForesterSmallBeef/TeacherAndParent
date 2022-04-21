@@ -1,17 +1,9 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, SelectField, SubmitField, PasswordField, BooleanField, \
     SelectMultipleField, widgets, DateField, DateTimeField
-from wtforms.validators import DataRequired, InputRequired, URL, ValidationError
+from wtforms.validators import DataRequired, InputRequired, URL, ValidationError, length
 
 from app.models import User
-
-# from flask import (Blueprint, redirect, render_template, request, flash, url_for,
-#                   abort)
-# from flask_login import login_user, login_required, logout_user, current_user
-#
-# from app import db
-# from app.models import Class, User, Parent, RolesIds, Permissions, Subject
-# from .utils import permissions_accepted, permissions_required
 
 
 class MultiCheckboxField(SelectMultipleField):
@@ -45,8 +37,8 @@ class RegisterTeacherForm(FlaskForm):
 
 
 class RegistrationParentForm(FlaskForm):
-    login = StringField('Логин', validators=[InputRequired()])
-    username = StringField('Имя', validators=[InputRequired()])
+    login = StringField('Логин', validators=[InputRequired(), length(min=10)])
+    username = StringField('Имя', validators=[InputRequired(), length(min=10)])
     usersurename = StringField('Фамилия', validators=[InputRequired()])
     usermiddlename = StringField('Отчество', validators=[InputRequired()])
     password = StringField('Пароль', validators=[InputRequired()])
@@ -55,8 +47,8 @@ class RegistrationParentForm(FlaskForm):
 
 
 class RegistrationHeadTeacherForm(FlaskForm):
-    login = StringField('Логин', validators=[InputRequired()])
-    username = StringField('Имя', validators=[InputRequired()])
+    login = StringField('Логин', validators=[InputRequired(), length(min=10)])
+    username = StringField('Имя', validators=[InputRequired(), length(min=10)])
     usersurename = StringField('Фамилия', validators=[InputRequired()])
     usermiddlename = StringField('Отчество', validators=[InputRequired()])
     password = StringField('Пароль', validators=[InputRequired()])
