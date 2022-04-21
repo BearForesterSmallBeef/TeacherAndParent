@@ -4,9 +4,9 @@
 
 {% block content %}
 
-<div class="container mb-5 pt-3">
 <h2>{{ header | default("Создание учетной записи для родителя") }}</h2>
 <form method="POST" action="">
+<div class="container">
     {{ form.csrf_token }}
     {{render_field(form["username"])}}
     {{render_field(form["usersurename"])}}
@@ -25,7 +25,7 @@
             </h2>
             <div id="collapse{{item.id}}" class="accordion-collapse collapse hide" aria-labelledby="heading{{item.id}}" data-bs-parent="#subjects">
               <div class="accordion-body">
-                  <table border="1px solid grey"><tr>
+                  <table border="1px solid grey";><tr>
                       {% for j in parallels %}
                       <td valign="top">{{render_field(form[item.name+j])}}</td>
                       {% endfor %}</tr>
@@ -35,8 +35,8 @@
         </div>
         {% endfor %}
     </div>
+    <p></p>
     {{render_field(form["submit"])}}
-</form>
 </div>
-
+</form>
 {% endblock %}
