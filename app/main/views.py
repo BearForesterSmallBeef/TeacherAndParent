@@ -22,10 +22,9 @@ def change_navbar():
         g.nav_items.extend([("main.get_subjects", "Предметы"), ("main.get_teachers", "Учителя")])
     role_label_mapping = {"parent": "Родитель",
                           "teacher": "Учитель",
-                          "head_teacher": "Зауч",
+                          "head_teacher": "Завуч",
                           "admin": "Админ", }
     g.nav_user_role = role_label_mapping.get(current_user.role.name)
-    g.nav_items.append(("flask-apispec.swagger-ui", "API"))
 
 
 class ConsultationCard:

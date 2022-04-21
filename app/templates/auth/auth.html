@@ -3,6 +3,9 @@
 
 {% block content %}
 
-<h2>{{ header | default("Создание учетной записи для родителя") }}</h2>
-<div class="container">{{ render_form(form) }}</div>
+<div class="container mb-5 pt-3">
+    <h2>{{ header | default("Создание учетной записи для родителя") }}</h2>
+    {{ render_form(form) }}
+</div>
+
 {% endblock %}
