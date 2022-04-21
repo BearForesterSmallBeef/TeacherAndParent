@@ -79,7 +79,8 @@ def teacher_consultations():
     consultation_cards = map(ConsultationCardTeacher, consultations)
     return render_template("teacher/consultations.html",
                            consultations=consultation_cards,
-                           fields_labels=ConsultationCardTeacher.fields_labels)
+                           fields_labels=ConsultationCardTeacher.fields_labels,
+                           PARENT=RolesIds.PARENT)
 
 
 @main.route("/parent/consultations")
@@ -92,7 +93,8 @@ def parent_consultations():
     consultation_cards = map(ConsultationCardParent, consultations)
     return render_template("parent/consultations.html",
                            consultations=consultation_cards,
-                           fields_labels=ConsultationCardParent.fields_labels)
+                           fields_labels=ConsultationCardParent.fields_labels,
+                           PARENT=RolesIds.PARENT)
 
 
 @main.route("/subjects")

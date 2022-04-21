@@ -114,3 +114,15 @@ class ManageConsultationForm(FlaskForm):
     url = StringField("Ссылка", validators=[URL()])
 
     submit = SubmitField('Добавить')
+
+
+class Agree(FlaskForm):
+    agree = BooleanField("Подтверждение действия")
+    submit = SubmitField('Продолжить')
+
+
+class HardAgree(FlaskForm):
+    login = StringField('Логин', validators=[InputRequired()])
+    password = PasswordField('Пароль', validators=[InputRequired()])
+    agree = BooleanField("Подтверждение действия")
+    submit = SubmitField('Продолжить')

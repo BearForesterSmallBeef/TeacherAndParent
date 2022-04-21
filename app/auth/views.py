@@ -11,7 +11,7 @@ from app import db
 from app.models import Class, User, Parent, RolesIds, Permissions, Subject, TeacherSubjectsClasses, \
     Consultation, Role
 from .forms import RegisterTypeForm, RegistrationParentForm, LoginForm, DeleteUser, AddSubject, \
-    AddClass, AddTypeForm, RegistrationHeadTeacherForm, ManageConsultationForm
+    AddClass, AddTypeForm, RegistrationHeadTeacherForm, ManageConsultationForm, Agree
 from .utils import permissions_accepted, permissions_required
 
 auth = Blueprint("auth", __name__)
@@ -478,3 +478,26 @@ def edit_consultation(consultation_id):
         return redirect(url_for("main.teacher_consultations"))
     return render_template("teacher/manage_consultation.html", form=form,
                            header="Создать консультацию")
+
+
+@auth.route("/teacher/consultations/delete/<int:consultation_id>", methods=["GET", "POST"])
+@permissions_required(Permissions.MANAGE_CONSULTATIONS)
+def delete_consultation(consultation_id):
+    form = Agree()
+    if form.validate_on_submit():
+        if form.data["agree"]:
+            try:
+                consultation = db.session.query(Consultation).filter(Consultation.id == int(consultation_id)).first()
+                db.session.delete(consultation)
+                db.session.commit()
+                flag = 1
+            except Exception as ex:
+                print(ex)
+                flag = 0
+            if flag == 1:
+                flash("Консультация успешно удалена", category="success")
+            elif flag == 0:
+                flash("ПРОИЗОШЕЛ СБОЙ, пожалуйста, повторите попытку позже", category="error")
+            return redirect(url_for("main.teacher_consultations"))
+    return render_template("auth/auth.html", form=form,
+                           header="Удаление консультации")
