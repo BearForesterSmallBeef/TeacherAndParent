@@ -33,11 +33,9 @@ class LoginUserResource(MethodResource):
     @use_kwargs(LoginSchema, location="query")
     @marshal_with(Schema.from_dict({"access_token": fields.Str()}), code=201)
     def post(self, login, password):
-        from flask_jwt_extended import decode_token
         user = User.query.filter_by(login=login).first()
         if user is not None and user.verify_password(password):
             access_token = create_access_token(user)
-            print(decode_token(access_token))
             return {"access_token": access_token}, 201
         abort(401, description="Invalid credentials")
 
