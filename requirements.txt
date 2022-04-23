@@ -11,3 +11,7 @@ flask-apispec==0.11.0
 flask-marshmallow==0.14.0
 marshmallow-sqlalchemy==0.28.0
 flask-jwt-extended==4.3.1
+pandas
+openpyxl
+xlsxwriter
+xlrd
