@@ -2,8 +2,9 @@ import datetime
 from functools import singledispatchmethod
 
 import sqlalchemy
-from flask_login import UserMixin
 from sqlalchemy import orm
+from sqlalchemy.ext.hybrid import hybrid_method
+from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from app import db, login_manager
@@ -29,7 +30,7 @@ class Class(db.Model):
     about = db.Column(db.String, nullable=True)
 
     def __repr__(self):
-        return '<Class %r>' % "; ".join(map(str, [self.id, self.name]))
+        return '<Class %r>' % "; ".join(map(str, [self.id, self.parallel, self.groups]))
 
 
 class Permissions:
@@ -197,8 +198,27 @@ class Consultation(db.Model):
                 - datetime.datetime.combine(datetime.date.min,
                                             self.start_time)).seconds
 
+    @hybrid_method
+    def is_accessible_by(self, user: User):
+        can_access = False
+        if user.role.name == "parent":
+            parent = Parent.query.filter_by(user_id=user.id).first()
+            if self.parent is None:
+                # и если класс родителя входит в классы учителя
+                if parent.class_ in Class.query.join(
+                        TeacherSubjectsClasses.query.filter_by(teacher_id=self.teacher_id)):
+                    can_access = True
+            elif self.parent_id == user.id:
+                can_access = True
+        elif user.role.name == "teacher":
+            if self.teacher_id == user.id:
+                can_access = True
+        elif user.role.name in ("head_teacher", "admin"):
+            can_access = True
+        return can_access
+
     def __repr__(self):
         return '<Consultation %r>' % "; ".join(
-            map(str, [self.id, self.teacher_id, self.parent_id, self.status,
+            map(str, [self.id, self.teacher_id, self.parent_id, self.is_free,
                       self.start_time, self.finish_time]))
 

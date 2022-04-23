@@ -9,18 +9,18 @@ def handle_error(_self, err):
     try/except block though out the application
     """
     # UnprocessableEntity suppress ValidationError so restoring
-    if isinstance(getattr(err, "exc"), ValidationError):
+    if isinstance(getattr(err, "exc", None), ValidationError):
         err = getattr(err, "exc")
         err.messages = err.messages["json"]
     print(err.with_traceback(err.__traceback__))
     # Handle HTTPExceptions
     if isinstance(err, HTTPException):
+        message = (getattr(err, "data", {}).get("description")
+                   or getattr(err, 'description', HTTP_STATUS_CODES.get(err.code, '')))
         error = {
             "error": {
                 "status": err.code,
-                'message': getattr(
-                    err, 'description', HTTP_STATUS_CODES.get(err.code, '')
-                ),
+                'message': message,
             }
         }
         return jsonify(error), err.code

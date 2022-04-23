@@ -1,7 +1,7 @@
 from flask import request, Blueprint
 from flask_apispec import MethodResource, marshal_with, doc, use_kwargs
-from flask_jwt_extended import jwt_required
-from flask_restful import Api
+from flask_jwt_extended import jwt_required, current_user
+from flask_restful import Api, abort
 from marshmallow import ValidationError
 
 from app import docs, db
@@ -9,7 +9,8 @@ from .auth import auth_bp, auth_params
 from .errors import EntityNotFound
 from .errors import handle_error
 from .schemas import ConsultationSchema
-from ..models import Consultation
+from .utils import permissions_accepted
+from ..models import Consultation, Permissions
 
 api_bp = Blueprint("api", __name__, url_prefix="/api/v1")
 api_bp.register_blueprint(auth_bp)
@@ -25,10 +26,13 @@ class ConsultationResource(MethodResource):
     @doc(summary="get consultation", params=auth_params)
     @marshal_with(ConsultationSchema, code=200)
     def get(self, consultation_id):
-        consultation = Consultation.query.get(consultation_id)
+        consultation: Consultation = Consultation.query.get(consultation_id)
         if consultation is None:
             raise EntityNotFound()
-        return Consultation.query.get(consultation_id)
+        can_access = consultation.is_accessible_by(current_user)
+        if not can_access:
+            abort(403, description="You can not access that consultation")
+        return consultation
 
     @doc(summary="edit whole consultation", responses={200: {
         "schema": {'type': 'object', 'properties': {'status': {'type': 'string', 'example': "ok"}}},
@@ -38,6 +42,9 @@ class ConsultationResource(MethodResource):
         consultation = Consultation.query.get(consultation_id)
         if consultation is None:
             raise EntityNotFound()
+        can_access = consultation.is_accessible_by(current_user)
+        if not can_access:
+            abort(403, description="You can not access that consultation")
         schema = ConsultationSchema()
         update_kwargs = schema.load(request.get_json())
         update_kwargs["id"] = consultation_id  # user can't edit id of entity
@@ -59,6 +66,9 @@ class ConsultationResource(MethodResource):
         consultation = Consultation.query.get(consultation_id)
         if consultation is None:
             raise EntityNotFound()
+        can_access = consultation.is_accessible_by(current_user)
+        if not can_access:
+            abort(403, description="You can not access that consultation")
         update_kwargs = ConsultationSchema().load(request.get_json(), partial=True)
         for key, value in update_kwargs.items():
             setattr(consultation, key, value)
@@ -72,6 +82,9 @@ class ConsultationResource(MethodResource):
         consultation = Consultation.query.get(consultation_id)
         if consultation is None:
             raise EntityNotFound()
+        can_access = consultation.is_accessible_by(current_user)
+        if not can_access:
+            abort(403, description="You can not access that consultation")
         db.session.delete(consultation)
         db.session.commit()
         return {"status": "ok"}
@@ -84,10 +97,13 @@ class ConsultationListResource(MethodResource):
     @doc(summary="get consultation list", params=auth_params)
     @marshal_with(ConsultationSchema(many=True), code=200)
     def get(self):
-        consultations = Consultation.query.all()
+        consultations = Consultation.query
+        # TODO: build hybrid method expression
+        consultations = filter(lambda x: x.is_accessible_by(current_user), consultations)
         return consultations
 
     @doc(summary="add consultation", params=auth_params)
+    @permissions_accepted(Permissions.MANAGE_CONSULTATIONS)  # TODO: documentation for access
     @use_kwargs(ConsultationSchema)
     @marshal_with(ConsultationSchema, code=200)
     def post(self, **_kwargs):
