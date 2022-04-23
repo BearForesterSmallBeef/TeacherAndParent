@@ -1,5 +1,5 @@
 import datetime
-
+from excel.excel_funcs import data_parent_registration
 from flask import (Blueprint, redirect, render_template, request, flash, url_for)
 from flask_login import login_user, login_required, logout_user, current_user
 from flask_wtf import FlaskForm
@@ -96,28 +96,37 @@ def choose_signup_type():
 
 def create_parent(login, password, name, surname, classes, middle_name=""):
     try:
-        parallel = classes[:classes.find("-")]
-        groups = classes[classes.find("-") + 1:]
+        if len(login) < 10 or len(password) < 10:
+            return 8
+        if db.session.query(User).filter(User.login == login).first():
+            return 11
+        try:
+            parallel = classes[:classes.find("-")]
+            groups = classes[classes.find("-") + 1:]
+            class_id = db.session.query(Class).filter(
+                Class.parallel == parallel and Class.groups == groups).first().id
+        except Exception as ex:
+            print(ex)
+            return 6
         db.session.add(
             User(login=login, password=password,
                  name=name,
                  surname=surname, middle_name=middle_name,
                  role_id=RolesIds.PARENT))
         user_id = db.session.query(User).filter(User.login == login).first().id
-        class_id = db.session.query(Class).filter(
-            Class.parallel == parallel and Class.groups == groups).first().id
         db.session.add(
             Parent(user_id=user_id, class_id=class_id))
         db.session.commit()
     except Exception as ex:
         print(ex)
-        return 0
-    return 1
+        return 8
+    return 0
 
 
 @auth.route("/signup/parent", methods=['GET', 'POST'])
 @permissions_required(Permissions.MANAGE_PARENTS)
 def parent_registration():
+    ex = data_parent_registration("excel\\test_excel_files\\test1.xlsx")
     form = RegistrationParentForm()
     form.classes.choices = sorted(
         [(str(i.parallel) + "-" + i.groups, str(i.parallel) + "-" + i.groups)
@@ -128,7 +137,7 @@ def parent_registration():
                              request.form["username"],
                              request.form["usersurename"], request.form["classes"],
                              middle_name=str(request.form["usermiddlename"]))
-        flag = bool(int(flag))
+        flag = bool(int(flag == 0))
         if flag:
             flash("Учетная запись для родителя успешна создана", category="success")
         else:
