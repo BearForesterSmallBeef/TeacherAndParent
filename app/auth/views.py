@@ -1,4 +1,7 @@
 import datetime
+import os
+import random
+
 from excel.excel_funcs import data_parent_registration
 from flask import (Blueprint, redirect, render_template, request, flash, url_for)
 from flask_login import login_user, login_required, logout_user, current_user
@@ -6,15 +9,34 @@ from flask_wtf import FlaskForm
 from sqlalchemy import null
 from wtforms import StringField, SubmitField, SelectMultipleField, widgets
 from wtforms.validators import InputRequired
-
+from werkzeug.utils import secure_filename, send_from_directory
 from app import db
 from app.models import Class, User, Parent, RolesIds, Permissions, Subject, TeacherSubjectsClasses, \
     Consultation, Role
 from .forms import RegisterTypeForm, RegistrationParentForm, LoginForm, DeleteUser, AddSubject, \
-    AddClass, AddTypeForm, RegistrationHeadTeacherForm, ManageConsultationForm, Agree
+    AddClass, AddTypeForm, RegistrationHeadTeacherForm, ManageConsultationForm, Agree, GetResult
 from .utils import permissions_accepted, permissions_required
+from excel.excel_funcs import ExcelErrors
 
 auth = Blueprint("auth", __name__)
+UPLOAD_FOLDER = 'excel\\files'
+
+
+def create_reg(length=10, check_login=True):
+    chars = "0123456789йцукенгшщзхъфывапролджэячсмитьбюЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮ"
+    reg = ""
+    for i in range(length):
+        reg += chars[random.randrange(0, len(chars))]
+    if check_login:
+        iteration = 0
+        while not db.session.query(User).filter(User.login == reg):
+            iteration += 1
+            for i in range(length):
+                reg += chars[random.randrange(0, len(chars))]
+            if iteration == 20:
+                iteration = 0
+                length += 1
+    return reg
 
 
 def get_registration_type_form():
@@ -126,8 +148,9 @@ def create_parent(login, password, name, surname, classes, middle_name=""):
 @auth.route("/signup/parent", methods=['GET', 'POST'])
 @permissions_required(Permissions.MANAGE_PARENTS)
 def parent_registration():
-    ex = data_parent_registration("excel\\test_excel_files\\test1.xlsx")
     form = RegistrationParentForm()
+    form.login.data = create_reg()
+    form.password.data = create_reg(check_login=False)
     form.classes.choices = sorted(
         [(str(i.parallel) + "-" + i.groups, str(i.parallel) + "-" + i.groups)
          for i in db.session.query(Class)],
@@ -510,3 +533,44 @@ def delete_consultation(consultation_id):
             return redirect(url_for("main.teacher_consultations"))
     return render_template("auth/auth.html", form=form,
                            header="Удаление консультации")
+
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1] in set(['xlsx'])
+
+
+@auth.route("/signup/parent/by_excel", methods=["GET", "POST"])
+@permissions_required(Permissions.MANAGE_PARENTS)
+def creating_parent_by_excel():
+    if request.method == 'POST':
+        file = request.files['file']
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            timing = datetime.datetime.now().strftime("%H%M%S%f.%d%m%y")
+            os.mkdir(os.path.join(UPLOAD_FOLDER, timing))
+            file.save(os.path.join(UPLOAD_FOLDER, timing, filename))
+            return redirect(url_for('auth.result_file_rendering',
+                                    filename=filename, timing=timing))
+    return render_template("auth/get_file.html")
+
+
+@auth.route("/signup/parent/by_excel/result/<filename>/<timing>", methods=["GET", "POST"])
+@permissions_required(Permissions.MANAGE_PARENTS)
+def result_file_rendering(filename, timing):
+    ex = data_parent_registration(os.path.join(UPLOAD_FOLDER, timing, filename), timing)
+    os.remove(os.path.join(UPLOAD_FOLDER, timing, filename))
+    os.rmdir(os.path.join(UPLOAD_FOLDER, timing))
+    if ex.message == ExcelErrors.ERRORS_DICT[10]:
+        return render_template("auth/suc_parent_reg.html",
+                               header=ex.message, timing=timing)
+    else:
+        flash(ex.message, category="error")
+        return redirect(url_for('auth.creating_parent_by_excel'))
+
+
+@auth.route("/signup/parent/by_excel/download/<timing>", methods=["GET", "POST"])
+@permissions_required(Permissions.MANAGE_PARENTS)
+def download(timing):
+    way = "excel\\reports\\" + timing
+    return send_from_directory(way, timing + ".xlsx", environ=request.environ)

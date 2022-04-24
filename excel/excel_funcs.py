@@ -1,6 +1,4 @@
 import os
-import datetime as dt
-
 import pandas
 
 HEADER_LIST = ["login", "password", "name", "surename", "class", "middlename"]
@@ -18,6 +16,7 @@ class ExcelErrors:
         7: "Что-то пошло не так при создание учетной записи",
         8: "Указанные логин и/или пароль не соответствует(ют) требованиям - длинна не менее 10 символов",
         9: "Что-то пошло не так при записи в конечный файл",
+        10: "Все прошло успешно!",
         11: "Пользователь с таким логином уже существует"
     }
 
@@ -90,15 +89,13 @@ def create_parents(excel_file):
     return register_list
 
 
-def data_parent_registration(excel_file):
+def data_parent_registration(excel_file, way):
     register_list = create_parents(excel_file)
     if isinstance(register_list, ExcelErrors):
         return register_list
     try:
         if not os.access("excel\\reports", os.F_OK):
             os.mkdir("excel\\reports")
-        sdt = '%H%M%S%f-%m.%d.%Y'
-        way = str(dt.datetime.now().strftime(sdt))
 
         os.mkdir("excel\\reports\\" + way)
 
@@ -106,10 +103,11 @@ def data_parent_registration(excel_file):
         file = open("excel\\reports\\" + way + "\\" + output_file_name, "w")
         file.close()
 
-        output_dataframe = pandas.DataFrame([register_list[0].keys()] +
-                                            [i.values() for i in register_list])
+        output_dataframe = pandas.DataFrame([[i for i in register_list[0].keys() if i != "password"]] +
+                                            [[i[j] for j in [i for i in register_list[0].keys() if i != "password"]]
+                                             for i in register_list])
         output_dataframe.to_excel("excel\\reports\\" + way + "\\" + output_file_name)
-        return ExcelErrors(0)
+        return ExcelErrors(10)
     except Exception as ex:
         print(ex)
         return ExcelErrors(9)
