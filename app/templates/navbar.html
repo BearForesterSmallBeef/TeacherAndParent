@@ -3,7 +3,10 @@
 <nav class="navbar navbar-dark bg-dark sticky-top">
     <div class="container-fluid">
         <div class="d-flex">
-            <a class="navbar-brand" href="/">TeacherAndParent</a>
+            <a class="navbar-brand" href="/">
+                <img src="{{ url_for('static', filename='favicon.svg') }}" alt="Ladybug" width="32" height="32" class="d-inline-block align-text-top">
+                TeacherAndParent
+            </a>
             {% if g.nav_user_role %}
             <span class="navbar-text">
                 {{ g.nav_user_role }}

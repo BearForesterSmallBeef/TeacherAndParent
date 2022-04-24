@@ -70,6 +70,8 @@ class ConsultationCardParent(ConsultationCard):
         super(ConsultationCardParent, self).__init__(consultation)
         self.teacher_name = (consultation.teacher.full_name
                              if consultation.teacher is not None else "")
+        if current_user.id != consultation.parent_id:
+            self.url = ""
 
 
 @main.route("/teacher/consultations")
