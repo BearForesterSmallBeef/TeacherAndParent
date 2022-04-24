@@ -453,6 +453,19 @@ def edit_consultation(consultation_id):
     if consultation is None:
         flash("Консультация не найдена", category="error")
         return redirect(url_for("main.teacher_consultations"))
+    if form.validate_on_submit():
+        parent = User.query.filter_by(login=form.parent_login.data).first()
+        start_time = form.start_time.data
+        duration = int(form.duration.data)
+        finish_time = (start_time + datetime.timedelta(minutes=duration)).time()
+        consultation.parent_id = getattr(parent, "id", None)
+        consultation.date = form.date.data
+        consultation.start_time = start_time.time()
+        consultation.finish_time = finish_time
+        consultation.is_free = form.is_free.data
+        consultation.url = form.url.data
+        db.session.commit()
+        return redirect(url_for("main.teacher_consultations"))
     form.parent_login.data = consultation.parent.login if consultation.parent else ""
     form.date.data = consultation.date
     form.start_time.data = datetime.datetime(1900, 1, 1, consultation.start_time.hour,
@@ -463,19 +476,6 @@ def edit_consultation(consultation_id):
         consultation.start_time.minute)).min)
     form.is_free.data = consultation.is_free
     form.url.data = consultation.url
-    if form.validate_on_submit():
-        parent = User.query.filter_by(login=form.parent_login.data).first()
-        start_time = form.start_time.data
-        duration = int(form.duration.data)
-        finish_time = (start_time + datetime.timedelta(minutes=duration)).time()
-        consultation.parent_id = getattr(parent, "id")
-        consultation.date = form.date.data
-        consultation.start_time = start_time.time()
-        consultation.finish_time = finish_time
-        consultation.is_free = form.is_free.data
-        consultation.url = form.url.data
-        db.session.commit()
-        return redirect(url_for("main.teacher_consultations"))
     return render_template("teacher/manage_consultation.html", form=form,
                            header="Создать консультацию")
 
