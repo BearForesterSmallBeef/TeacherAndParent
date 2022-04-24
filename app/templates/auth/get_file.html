@@ -2,10 +2,14 @@
 {% from 'bootstrap5/form.html' import render_form %}
 
 {% block content %}
+
+<div class="container mb-5 pt-3">
 <h2>Загрузка файла для регистрации</h2>
     <form action="" method=post enctype=multipart/form-data>
       <p><input type=file name=file>
         <p><input class="btn btn-primary" type=submit value=Загрузить>
     </form>
 <a class="btn btn-primary" href="{{ url_for('auth.download', timing='form') }}">Скачать шаблон</a>
+</div>
+
 {% endblock %}

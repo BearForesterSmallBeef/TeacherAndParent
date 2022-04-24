@@ -15,7 +15,7 @@ from ..models import Consultation, Permissions
 api_bp = Blueprint("api", __name__, url_prefix="/api/v1")
 api_bp.register_blueprint(auth_bp)
 Api.handle_error = handle_error
-api = Api(api_bp, catch_all_404s=True)
+api = Api(api_bp)
 
 
 @doc(tags=["consultation"],

@@ -3,6 +3,9 @@
 
 {% block content %}
 
-<h2>{{ header | default("Создание учетной записи для родителя") }}</h2>
-<a class="btn btn-primary" href="{{ url_for('auth.download', timing=timing) }}">Скачать</a>
+<div class="container mb-5 pt-3">
+    <h2>{{ header | default("Создание учетной записи для родителя") }}</h2>
+    <a class="btn btn-primary" href="{{ url_for('auth.download', timing=timing) }}">Скачать</a>
+</div>
+
 {% endblock %}
