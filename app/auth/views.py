@@ -72,7 +72,7 @@ def choose_delete_type():
     if register_form.validate_on_submit():
         user_status = register_form.user_status.data
         return redirect(f"/delete/{user_status}")
-    return render_template("auth/register.html", form=register_form,
+    return render_template("auth/auth.html", form=register_form,
                            header="Удаление. Тип пользователя.")
 
 
@@ -90,7 +90,7 @@ def choose_signup_type():
     if register_form.validate_on_submit():
         user_status = register_form.user_status.data
         return redirect(f"/signup/{user_status}")
-    return render_template("auth/register.html", form=register_form,
+    return render_template("auth/auth.html", form=register_form,
                            header="Регистрация. Тип пользователя.")
 
 
@@ -376,7 +376,7 @@ def choose_add_type():
     if register_form.validate_on_submit():
         adding = register_form.user_status.data
         return redirect(f"/add/{adding}")
-    return render_template("auth/register.html", form=register_form,
+    return render_template("auth/auth.html", form=register_form,
                            header="Добавление. Тип объекта.")
 
 

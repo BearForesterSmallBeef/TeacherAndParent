@@ -13,43 +13,38 @@
             </div>
         </div>
         {% endfor %}
-        {% if card_data.teacher_name is defined %}
         <div class="list-group-item list-group-item-{{ color }}">
+        {% if card_data.teacher_name is defined %}
             {% if card_data.parent_id != current_user.id %}
             <div class="row">
                 <form action="{{ url_for('main.schedule_consultation',
-                     consultation_id=card_data.consultation_id) }}" method="post">
-                    <div class="btn-group"  style="width:100%">
-                        <button style="width:100%" class="btn btn-{{ color }}
-                             {{ '' if card_data.is_free else 'disabled' }}
-                              form-control" data-bs-toggle="modal" data-bs-target="#exampleModal">Записаться
-                        </button>
-                    </div>
+                     consultation_id=card_data.consultation_id) }}" class="col" method="post">
+                    <button class="btn btn-{{ color }}
+                         {{ '' if card_data.is_free else 'disabled' }}
+                          form-control" >Записаться
+                    </button>
                 </form>
             </div>
             {% else %}
             <div class="row">
                 <form action="{{ url_for('main.cancel_consultation',
-                     consultation_id=card_data.consultation_id) }}" method="post">
-                    <div class="btn-group"  style="width:100%">
-                        <button style="width:100%" class="btn btn-danger
-                              form-control" data-bs-toggle="modal" data-bs-target="#exampleModal">Отменить запись
-                        </button>
-                    </div>
+                     consultation_id=card_data.consultation_id) }}" class="col" method="post">
+                    <button class="btn btn-danger
+                          form-control">Отменить запись
+                    </button>
                 </form>
             </div>
             {% endif %}
-        </div>
         {% else %}
-        <div class="row">
-            <div class="btn-group"  style="width:100%">
-                <a style="width:50%" role="button" class="btn btn-{{ color }}
-                             {{ '' if card_data.is_free else 'disabled' }}
-                              form-control" href="/teacher/consultations/edit/{{ card_data.consultation_id }}">Изменить</a>
-                <a style="width:50%" role="button" class="btn btn-danger
-                              form-control" href="/teacher/consultations/delete/{{ card_data.consultation_id }}">Удалить</a>
+        <div class="row g-2">
+            <div class="col">
+                <a role="button" class="btn btn-primary form-control" href="/teacher/consultations/edit/{{ card_data.consultation_id }}">Изменить</a>
+            </div>
+            <div class="col">
+                <a role="button" class="btn btn-danger form-control" href="/teacher/consultations/delete/{{ card_data.consultation_id }}">Удалить</a>
             </div>
         </div>
         {% endif %}
+        </div>
     </dl>
 </div>
