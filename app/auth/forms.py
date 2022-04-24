@@ -2,7 +2,6 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, SelectField, SubmitField, PasswordField, BooleanField, \
     SelectMultipleField, widgets, DateField, DateTimeField
 from wtforms.validators import DataRequired, InputRequired, URL, ValidationError, length
-
 from app.models import User
 
 
@@ -118,3 +117,7 @@ class HardAgree(FlaskForm):
     password = PasswordField('Пароль', validators=[InputRequired()])
     agree = BooleanField("Подтверждение действия")
     submit = SubmitField('Продолжить')
+
+
+class GetResult(FlaskForm):
+    pass
