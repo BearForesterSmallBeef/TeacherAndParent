@@ -17,7 +17,8 @@ def change_navbar():
     if current_user.can(Permissions.MANAGE_OBJECTS):
         g.nav_items.extend([("auth.add", "Добавление"), ])
     if current_user.can(Permissions.MANAGE_PARENTS):  # кто ХОТЯ БЫ может создать пользоваетлей
-        g.nav_items.extend([("auth.signup", "Регистрация"), ("auth.delete", "Удаление")])
+        g.nav_items.extend([("auth.signup", "Регистрация"), ("auth.delete", "Удаление"),
+                            ("auth.creating_parent_by_excel", "Загрузка файла")])
     if current_user.role_id == RolesIds.PARENT:
         g.nav_items.extend([("main.get_subjects", "Предметы"), ("main.get_teachers", "Учителя")])
     role_label_mapping = {"parent": "Родитель",
