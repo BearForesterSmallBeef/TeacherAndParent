@@ -52,7 +52,7 @@ def get_registration_type_form():
         user_statuses.append(user_status)
     if current_user.can(Permissions.MANAGE_HEAD_TEACHER):
         user_status = Role.query.get(RolesIds.HEAD_TEACHER).name
-        user_status = (user_status, "Зауч")
+        user_status = (user_status, "Завуч")
         user_statuses.append(user_status)
     register_form.user_status.choices = user_statuses
     return register_form
@@ -303,11 +303,11 @@ def head_teacher_registration():
             db.session.add(head_teacher)
             db.session.commit()
         if flag:
-            flash("Учетная запись для зауча успешна создана", category="success")
+            flash("Учетная запись для завуча успешна создана", category="success")
         else:
             flash("ПРОИЗОШЕЛ СБОЙ, пожалуйста, повторите попытку позже", category="error")
         return redirect(f"/signup")
-    return render_template("auth/auth.html", form=form, header="Создание учетной записи зауча")
+    return render_template("auth/auth.html", form=form, header="Создание учетной записи завуча")
 
 
 def delete_user(login, password, role=-1):
@@ -383,13 +383,13 @@ def delete_head_teacher():
     if form.validate_on_submit() and form.data["delete"]:
         flag = delete_user(form.data["login"], form.data["password"], role=RolesIds.PARENT)
         if flag == 1:
-            flash("Учетная запись зауча успешна удалена", category="success")
+            flash("Учетная запись завуча успешна удалена", category="success")
         elif flag == 0:
             flash("ПРОИЗОШЕЛ СБОЙ, пожалуйста, повторите попытку позже", category="error")
         elif flag == 2:
             flash("Некоректный ввод данных", category="error")
         return redirect(f"/delete")
-    return render_template("auth/auth.html", form=form, header="Удаление учетной записи зауча")
+    return render_template("auth/auth.html", form=form, header="Удаление учетной записи завуча")
 
 
 @auth.route("/add/choose", methods=["GET", 'POST'])
