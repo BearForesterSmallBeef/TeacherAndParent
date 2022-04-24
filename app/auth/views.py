@@ -23,7 +23,7 @@ UPLOAD_FOLDER = 'excel\\files'
 
 
 def create_reg(length=10, check_login=True):
-    chars = "0123456789йцукенгшщзхъфывапролджэячсмитьбюЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮ"
+    chars = "0123456789qwertyuiopasdfghjkzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM"
     reg = ""
     for i in range(length):
         reg += chars[random.randrange(0, len(chars))]
