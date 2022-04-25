@@ -20,7 +20,7 @@ class Config:
 
 class ProductionConfig(Config):
     FLASK_ENV = 'production'
-    SQLALCHEMY_DATABASE_URI = 'mysql://user@localhost/db.sqlite'
+    SQLALCHEMY_DATABASE_URI = f"sqlite:///{os.path.join(BASE_DIR, 'db.sqlite')}"
 
 
 class DevelopmentConfig(Config):
