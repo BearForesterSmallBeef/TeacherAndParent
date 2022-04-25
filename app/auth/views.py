@@ -546,6 +546,8 @@ def creating_parent_by_excel():
     if request.method == 'POST':
         file = request.files['file']
         if file and allowed_file(file.filename):
+            if not os.access(UPLOAD_FOLDER, os.F_OK):
+                os.mkdir(UPLOAD_FOLDER)
             filename = secure_filename(file.filename)
             timing = datetime.datetime.now().strftime("%H%M%S%f.%d%m%y")
             os.mkdir(os.path.join(UPLOAD_FOLDER, timing))
