@@ -20,7 +20,7 @@ class Config:
 
 class ProductionConfig(Config):
     FLASK_ENV = 'production'
-    SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL")
+    SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL").replace("postgres://", "postgresql://", 1)
 
 
 class DevelopmentConfig(Config):
