@@ -1,2 +1,2 @@
-web: sh -c 'flask deploy'
+release: flask deploy
 web: gunicorn main:app
