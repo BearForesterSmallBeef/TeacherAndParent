@@ -16,3 +16,4 @@ openpyxl
 xlsxwriter
 xlrd
 gunicorn
+psycopg2==2.9.3
