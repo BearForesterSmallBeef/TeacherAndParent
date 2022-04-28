@@ -173,7 +173,7 @@ def parent_registration():
 def login():
     form = LoginForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(login=form.login.data.lower()).first()
+        user = User.query.filter_by(login=form.login.data).first()
         if user is not None and user.verify_password(form.password.data):
             login_user(user, form.remember_me.data)
             flash("Вы успешно авторизовались.", category="success")
